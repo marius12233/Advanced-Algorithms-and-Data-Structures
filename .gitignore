@@ -1,0 +1,4 @@
+#Ignore executable file
+
+*.pyc
+
