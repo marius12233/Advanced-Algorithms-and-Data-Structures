@@ -51,6 +51,7 @@ class CircularPositionalList(PositionalList):
                 node._sorted_right = False
                 node._next._sorted_left = False
                 self._count_not_sorted += 2
+        return p
 
 
     def add_last(self, e):
@@ -64,6 +65,7 @@ class CircularPositionalList(PositionalList):
                 node._sorted_left = False
                 node._prev._sorted_right = False
                 self._count_not_sorted += 2
+        return p
 
 
     def delete(self, p):
