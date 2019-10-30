@@ -24,8 +24,8 @@ class TestCircularPositionalList(unittest.TestCase):
     def test_delete(self):
         self._l.add_last(8)
         self._l.add_last(9)
-        self._l.add_last(10)
+        self._l.add_last(11)
         e = self._l.delete(self._l.last())
-        self.assertEqual(e,10)
+        self.assertEqual(e,11)
         self.assertTrue(self._l.is_sorted())
 
