@@ -5,3 +5,7 @@
 #Ignore xml files
 
 *.xml
+
+#Ignore .idea folder
+
+/.idea
