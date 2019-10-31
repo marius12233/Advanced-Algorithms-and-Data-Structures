@@ -4,7 +4,7 @@ class CircularPositionalList(PositionalList):
 
     def __init__(self):
         super().__init__()
-        #Conta gli elementi non ordinati
+        # Conta gli elementi non ordinati
         self._count_not_sorted = 0
 
     class _Node(PositionalList._Node):
@@ -13,7 +13,6 @@ class CircularPositionalList(PositionalList):
             super().__init__(element, prev, next)
             self._sorted_left = True
             self._sorted_right = True
-
 
     def before(self, p):
         node = self._validate(p)
@@ -30,10 +29,8 @@ class CircularPositionalList(PositionalList):
     def is_empty(self):
         return self._size==0
 
-
     def is_sorted(self):
         return self._count_not_sorted==0
-
 
     def add_first(self, e):
         p = super().add_first(e)
@@ -42,17 +39,11 @@ class CircularPositionalList(PositionalList):
         if self._size == 1:
             self._header._prev = node
         else:
-            """if node._element < node._prev._element:
-                node._sorted_left = False
-                node._prev._sorted_right = False
-                self._count_not_sorted += 2"""
-
             if node._element > node._next._element:
                 node._sorted_right = False
                 node._next._sorted_left = False
                 self._count_not_sorted += 2
         return p
-
 
     def add_last(self, e):
         p = super().add_last(e)
@@ -67,8 +58,8 @@ class CircularPositionalList(PositionalList):
                 self._count_not_sorted += 2
         return p
 
-
     def delete(self, p):
+
         p_prev = self.before(p)
         if p_prev is not None:
             node_prev = self._validate(p_prev)
@@ -84,8 +75,8 @@ class CircularPositionalList(PositionalList):
         if node._sorted_right == False:
             self._count_not_sorted -= 1
 
-        #Check i nodi rimasti
-        #Verifico il caso in cui elimino un elemento in mezzo
+        # Check i nodi rimasti
+        # Verifico il caso in cui elimino un elemento in mezzo
         if node_prev is not self._header:
 
             if node_prev._next is not None:
@@ -98,12 +89,9 @@ class CircularPositionalList(PositionalList):
                     node_prev._sorted_right = True
                     self._count_not_sorted -= 1
 
-
-
-
         if node_next is not self._trailer:
 
-            if node_next._prev is not None: #Il nodo cancellato non era in testa
+            if node_next._prev is not None: # Il nodo cancellato non era in testa
                 if node_next._element < node_next._prev._element:
                     if node_next._sorted_left:
                         node_prev._sorted_left = False
@@ -115,6 +103,49 @@ class CircularPositionalList(PositionalList):
                     self._count_not_sorted -= 1
 
         return el
+
+    def add_before(self,p,e):
+        node = self._validate(p)
+        if node is self._header._next:
+            return self.add_first(e)
+        predecessor = self.before(p)
+        successor = self.after(p)
+        node = self._insert_between_rebalance(e, predecessor, successor)
+        return self._make_position(node)
+
+    def add_after(self,p,e):
+        node = self._validate(p)
+        if node is self._trailer._prev:
+            return self.add_last(e)
+        predecessor = self.before(p)
+        successor = self.after(p)
+        node = self._insert_between_rebalance(e, predecessor, successor)
+        return self._make_position(node)
+
+    def _insert_between_rebalance(self, e, predecessor, successor):
+        node_prev = self._validate(predecessor)
+        node_next = self._validate(successor)
+        node = super()._insert_between(e,predecessor,successor)
+
+        if e < node_prev._element:
+            if node_prev._sorted_right == True:
+                node_prev._sorted_right = False
+                self._count_not_sorted+=1
+            node._sorted_left = False
+            self._count_not_sorted += 1
+
+        if e > node_next._element:
+            if node_next._sorted_left == True:
+                node_next._sorted_left = False
+                self._count_not_sorted+=1
+            node._sorted_right = False
+            self._count_not_sorted += 1
+
+        return node
+
+
+
+
 
 
 if __name__ == "__main__":
