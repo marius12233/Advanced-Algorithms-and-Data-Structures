@@ -36,9 +36,22 @@ class TestCircularPositionalList(unittest.TestCase):
         e = 5
         #Singolo inserimento
         p = self._l.add_last(e)
+        self.assertEqual(self._l._size, 1)
         self.assertEqual(self._l.last().element(),e)
         self.assertTrue(self._l.is_sorted())
         self.assertEqual(p.element(), e)
+        self._l.add_last(6)
+        self._l.add_last(7)
+        self.assertTrue(self._l.is_sorted())
+        self.assertEqual(self._l._count_not_sorted, 0)
+        self._l.delete(self._l.last())
+        self.assertEqual(self._l._size, 2)
+        self.assertEqual(self._l._count_not_sorted, 0)
+        self._l.add_last(5)
+        self.assertEqual(self._l._size, 3)
+        self.assertEqual(self._l._count_not_sorted, 2)
+        self.assertFalse(self._l.is_sorted())
+
 
     def test_add_before(self):
         succ = self._l.add_first(10)
@@ -59,6 +72,16 @@ class TestCircularPositionalList(unittest.TestCase):
         self.assertEqual(self._l.before(self._l.last()).element(), 10)
 
     def test_delete(self):
+
+        self._l.add_last(5)
+        p = self._l.add_last(6)
+        self._l.add_last(7)
+        self._l.delete(p)
+        self.assertTrue(self._l.is_sorted())
+        self._l.delete(self._l.first())
+        self.assertTrue(self._l.is_sorted())
+        self._l.delete(self._l.first())
+
         self._l.add_last(8)
         self._l.add_last(9)
         self._l.add_last(11)
@@ -72,10 +95,15 @@ class TestCircularPositionalList(unittest.TestCase):
         self.assertEqual(e,8)
         self.assertTrue(self._l.is_sorted())
 
+        self._l.add_last(11)
+        self.assertTrue(self._l.is_sorted())
+
+
         e = self._l.delete(self._l.first())
         # Vuota
         self.assertEqual(e,9)
         self.assertTrue(self._l.is_sorted())
+
 
     def test_reverse(self):
         self._l.add_last(3)
