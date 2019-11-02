@@ -112,8 +112,7 @@ class CircularPositionalList(PositionalList):
 
     def delete(self, p):
         node_prev, node_next = None, None
-        p_prev = self.before(p)
-        p_next = self.after(p)
+        p_prev, p_next = None, None
 
         node = self._validate(p)
         # aggiorno i valori sorted_left e sorted_right
@@ -121,6 +120,14 @@ class CircularPositionalList(PositionalList):
             self._count_not_sorted -= 1
         if node._sorted_right == False:
             self._count_not_sorted -= 1
+
+        if node._prev is not self._header:
+            p_prev = self.before(p)
+            node_prev = self._validate(p_prev)
+        if node._next is not self._trailer:
+            p_next = self.after(p)
+            node_next = self._validate(p_next)
+
         #Poi posso eliminarlo
         el = node._element
         super().delete(p)
@@ -129,10 +136,6 @@ class CircularPositionalList(PositionalList):
         if self.is_empty(): #Nodo da cancellare era l'unico
             return el
 
-        if p_prev is not None: # La position precedente il nodo da cancellare non racchiudeva header
-            node_prev = self._validate(p_prev)
-        if p_next is not None:
-            node_next = self._validate(p_next)
 
 
         # Check i nodi rimasti
