@@ -25,12 +25,17 @@ class TestCircularPositionalList(unittest.TestCase):
 
 
     def test_add_first(self):
-        e = 10
+        e = 8
         #Singolo inserimento
         p = self._l.add_first(e)
         self.assertEqual(self._l.first().element(),e)
         self.assertEqual(self._l._count_not_sorted,0)
         self.assertEqual(p.element(), e)
+
+        p = self._l.add_first(9)
+        self.assertEqual(self._l.first().element(), 9)
+        self.assertEqual(self._l._count_not_sorted, 2)
+        self.assertEqual(p.element(), 9)
 
     def test_add_last(self):
         e = 5
