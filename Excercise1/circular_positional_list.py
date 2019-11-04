@@ -229,7 +229,49 @@ class CircularPositionalList(PositionalList):
     def reverse(self):
         self._is_reversed = not self._is_reversed
 
+    def replace(self, p, e):
+        old = super().replace(p, e)
 
+        node = self._validate(p)
+        if node._prev is not self._header:
+            p_prev = self.before(p)
+            if p_prev is not None:
+                node_prev = self._validate(p_prev)
+                if e < node_prev._element:
+                    if node_prev._sorted_right == True:
+                        node_prev._sorted_right = False
+                        self._count_not_sorted+=1
+                    if node._sorted_left == True:
+                        node._sorted_left = False
+                        self._count_not_sorted+=1
+                else:
+                    if node_prev._sorted_right == False:
+                        node_prev._sorted_right = True
+                        self._count_not_sorted-=1
+                    if node._sorted_left == False:
+                        node._sorted_left = True
+                        self._count_not_sorted-=1
+
+        if node._next is not self._trailer:
+            p_next = self.after(p)
+            if p_next is not None:
+                node_next = self._validate(p_next)
+                if e > node_next._element:
+                    if node_next._sorted_left == True:
+                        node_next._sorted_left = False
+                        self._count_not_sorted+=1
+                    if node._sorted_right == True:
+                        node._sorted_right = False
+                        self._count_not_sorted+=1
+                else:
+                    if node_next._sorted_left == False:
+                        node_next._sorted_left = True
+                        self._count_not_sorted-=1
+                    if node._sorted_right == False:
+                        node._sorted_right = True
+                        self._count_not_sorted-=1
+
+        return old
 
 
 
