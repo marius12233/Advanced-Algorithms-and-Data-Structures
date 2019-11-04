@@ -298,18 +298,3 @@ class CircularPositionalList(PositionalList):
             last_element = self.delete(last_position)
             return last_element
 
-
-
-if __name__ == "__main__":
-    l = CircularPositionalList()
-    l.add_first(10)
-    l.add_last(8)
-    l.add_first(7)
-    l.add_last(6)
-    print(l.delete(l.last()))
-    print(l.first().element())
-    print(l.last().element())
-    print(l.is_sorted())
-    print(l._count_not_sorted)
-
-
