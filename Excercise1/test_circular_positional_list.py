@@ -149,7 +149,7 @@ class TestCircularPositionalList(unittest.TestCase):
         self._l.reverse()
         self.assertTrue(self._l.is_sorted())
 
-     def test_replace(self):
+    def test_replace(self):
         self._l.add_last(8)
         self._l.add_last(9)
         self._l.add_last(11)
@@ -158,6 +158,6 @@ class TestCircularPositionalList(unittest.TestCase):
         e_old = self._l.replace(self._l.last(), e_new)
         self.assertEqual(self._l.last().element(), e_new)
         self.assertEqual(e_old, 11)
-        self.assertTrue(self._l.is_sorted())
+        self.assertFalse(self._l.is_sorted())
 
 
