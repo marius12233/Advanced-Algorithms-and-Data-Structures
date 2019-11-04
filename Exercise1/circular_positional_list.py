@@ -282,19 +282,5 @@ class CircularPositionalList(PositionalList):
 
         return old
         
-    def delete_first(self):
-        if self.is_empty() is True:
-            raise TypeError('List is empty')
-        else:
-            first_position = super().first(self)
-            first_element = self.delete(first_position)
-            return first_element
-
-    def delete_last(self):
-        if self.is_empty() is True:
-            raise TypeError('List is empty')
-        else:
-            last_position = super().last(self)
-            last_element = self.delete(last_position)
-            return last_element
+    
 
