@@ -165,4 +165,25 @@ class TestCircularPositionalList(unittest.TestCase):
         self.assertEqual(e_old, 11)
         self.assertFalse(self._l.is_sorted())
 
+    def test_add(self):
+        self._l.add_last(8)
+        self._l.add_last(9)
+        self._l.add_last(11)
+
+        y = CircularPositionalList()
+        y.add_last(1)
+        y.add_last(2)
+        y.add_last(3)
+        self.assertTrue(self._l.is_sorted())
+
+        self._l = self._l + y
+
+        self.assertEqual(self._l.first().element(), 8)
+        self.assertEqual(self._l.last().element(), 3)
+        self.assertFalse(self._l.is_sorted())
+
+
+
+
+
 

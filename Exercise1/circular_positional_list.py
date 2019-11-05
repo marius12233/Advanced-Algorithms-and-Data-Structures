@@ -281,6 +281,39 @@ class CircularPositionalList(PositionalList):
                         self._count_not_sorted-=1
 
         return old
-        
+
+    def __add__(self, other):
+        tail = self.last()
+        head = other.first()
+        this_tail = self._validate(tail)
+        other_head = other._validate(head)
+        this_tail._next = other_head
+        other_head._prev = this_tail
+
+        if this_tail._element > other_head._element:
+            this_tail._sorted_right = False
+            self._count_not_sorted +=1
+        elif this_tail._element < other_head._element:
+            other_head._sorted_left = False
+            self._count_not_sorted += 1
+
+        self._count_not_sorted+=other._count_not_sorted
+        self._header._prev = other._trailer._prev
+        other._trailer._next = self._header._next
+        # Delete node trailer
+        self._trailer._prev = self._trailer
+        self._trailer._next = self._trailer
+        self._trailer = other._trailer
+        #Remove other header
+        other._header._prev = other._header
+        other._trailer._next = other._header
+
+        self._size += other._size
+
+        return self
+
+
+
+
     
 
