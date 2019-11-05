@@ -1,21 +1,37 @@
 from TdP_collections.list.positional_list import PositionalList
 
 class CircularPositionalList(PositionalList):
-
+    
+    #-------------------------- Circular Positional List constructor --------------------------
     def __init__(self):
         super().__init__()
         # Conta gli elementi non ordinati
         self._count_not_sorted = 0
         # Utilizziamo la proprietà is_reversed per indicare che la lista è reversed rispetto alla struttura interna
         self._is_reversed = False
-
+    
+    
+    #-------------------------- nested _Node class --------------------------
+    # override of the nested _Node class in Doubly Linked Base class
     class _Node(PositionalList._Node):
 
         def __init__(self, element, prev, next):
             super().__init__(element, prev, next)
             self._sorted_left = True
             self._sorted_right = True
+    
+    
+    #-------------------------- utility methods -------------------------------
+    def is_empty(self):
+        return self._size==0
 
+    def is_sorted(self):
+        if self._is_reversed:
+            return self._count_not_sorted==(2*self._size-2)
+        return self._count_not_sorted==0
+    
+    
+    #-------------------------- accessors methods -------------------------------
     # ## To implement reverse in O(1) is needed to override first and last methods ## #
     def first(self):
         if self._is_reversed:
@@ -32,7 +48,8 @@ class CircularPositionalList(PositionalList):
             self._is_reversed = True
             return p
         return super().last()
-
+    
+    # override inherited version to make the inherited Position List circular
     def before(self, p):
         #Se è reversed, il metodo before sarebbe il metodo after
         if self._is_reversed:
@@ -47,7 +64,8 @@ class CircularPositionalList(PositionalList):
         if before is self._header:
             return self._make_position(before._prev)
         return super().before(p)
-
+    
+    # override inherited version to make the inherited Position List circular
     def after(self, p):
         #Se è reversed, il metodo before sarebbe il metodo after
         if self._is_reversed:
@@ -61,15 +79,9 @@ class CircularPositionalList(PositionalList):
         if next is self._trailer:
             return self._make_position(next._next)
         return super().after(p)
-
-    def is_empty(self):
-        return self._size==0
-
-    def is_sorted(self):
-        if self._is_reversed:
-            return self._count_not_sorted==(2*self._size-2)
-        return self._count_not_sorted==0
-
+    
+    
+    #--------------------------- mutators methods -------------------------------
     def add_first(self, e):
         if self._is_reversed:
             #Dato che ogni metodo controerà se è reversed, per far eseguire after è necessario settare is_reversed a False
@@ -132,11 +144,8 @@ class CircularPositionalList(PositionalList):
         el = node._element
         super().delete(p)
 
-
         if self.is_empty(): #Nodo da cancellare era l'unico
             return el
-
-
 
         # Check i nodi rimasti
         # Verifico il caso in cui elimino un elemento in mezzo
@@ -229,20 +238,49 @@ class CircularPositionalList(PositionalList):
     def reverse(self):
         self._is_reversed = not self._is_reversed
 
+    def replace(self, p, e):
+        old = super().replace(p, e)
 
+        node = self._validate(p)
+        if node._prev is not self._header:
+            p_prev = self.before(p)
+            if p_prev is not None:
+                node_prev = self._validate(p_prev)
+                if e < node_prev._element:
+                    if node_prev._sorted_right == True:
+                        node_prev._sorted_right = False
+                        self._count_not_sorted+=1
+                    if node._sorted_left == True:
+                        node._sorted_left = False
+                        self._count_not_sorted+=1
+                else:
+                    if node_prev._sorted_right == False:
+                        node_prev._sorted_right = True
+                        self._count_not_sorted-=1
+                    if node._sorted_left == False:
+                        node._sorted_left = True
+                        self._count_not_sorted-=1
 
+        if node._next is not self._trailer:
+            p_next = self.after(p)
+            if p_next is not None:
+                node_next = self._validate(p_next)
+                if e > node_next._element:
+                    if node_next._sorted_left == True:
+                        node_next._sorted_left = False
+                        self._count_not_sorted+=1
+                    if node._sorted_right == True:
+                        node._sorted_right = False
+                        self._count_not_sorted+=1
+                else:
+                    if node_next._sorted_left == False:
+                        node_next._sorted_left = True
+                        self._count_not_sorted-=1
+                    if node._sorted_right == False:
+                        node._sorted_right = True
+                        self._count_not_sorted-=1
 
-
-if __name__ == "__main__":
-    l = CircularPositionalList()
-    l.add_first(10)
-    l.add_last(8)
-    l.add_first(7)
-    l.add_last(6)
-    print(l.delete(l.last()))
-    print(l.first().element())
-    print(l.last().element())
-    print(l.is_sorted())
-    print(l._count_not_sorted)
-
+        return old
+        
+    
 

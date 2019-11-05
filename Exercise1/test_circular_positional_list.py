@@ -1,5 +1,5 @@
 import unittest
-from circular_positional_list import CircularPositionalList
+from .circular_positional_list import CircularPositionalList
 
 
 class TestCircularPositionalList(unittest.TestCase):
@@ -154,5 +154,15 @@ class TestCircularPositionalList(unittest.TestCase):
         self._l.reverse()
         self.assertTrue(self._l.is_sorted())
 
+    def test_replace(self):
+        self._l.add_last(8)
+        self._l.add_last(9)
+        self._l.add_last(11)
+        self.assertTrue(self._l.is_sorted())
+        e_new = 5
+        e_old = self._l.replace(self._l.last(), e_new)
+        self.assertEqual(self._l.last().element(), e_new)
+        self.assertEqual(e_old, 11)
+        self.assertFalse(self._l.is_sorted())
 
 
