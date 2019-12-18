@@ -20,9 +20,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .binary_tree import BinaryTree
+from TdP_collections.list.positional_list import PositionalList
+
 
 class LinkedBinaryTree(BinaryTree):
   """Linked representation of a binary alberi structure."""
+
 
   #-------------------------- nested _Node class --------------------------
   class _Node:
@@ -71,10 +74,11 @@ class LinkedBinaryTree(BinaryTree):
     return self.Position(self, node) if node is not None else None
 
   #-------------------------- binary alberi constructor --------------------------
-  def __init__(self):
+  def __init__(self, list_child):
     """Create an initially empty binary alberi."""
     self._root = None
     self._size = 0
+    self._l = list_child if list_child is not None else PositionalList()
 
   #-------------------------- public accessors --------------------------
   def __len__(self):
@@ -178,14 +182,47 @@ class LinkedBinaryTree(BinaryTree):
       child._parent = node._parent   # child's grandparent becomes parent
     if node is self._root:
       self._root = child             # child becomes root
+
+      child_out = node._left_out if node._left_out else node._right_out
+      self._l.delete(child_out)
+      child_out = None
+
     else:
+      # Il nodo da eliminare è una foglia
       parent = node._parent
+
+      self._l.delete(node._left_out)
+      node._left_out = None
+
       if node is parent._left:
+        if child is None:
+          right_child_out = node._right_out
+          parent._left_out=right_child_out
+          right_child_out._node._parent=self._make_position(parent)
+
+        else:
+          child_out = node._left_out if node._left_out else node._right_out
+          self._l.delete(child_out)
+          child_out = None
+
         parent._left = child
       else:
+        if child is None:
+          right_child_out = node._right_out
+          parent._right_out = right_child_out
+          right_child_out._node._parent = self._make_position(parent)
+        else:
+          child_out = node._left_out if node._left_out else node._right_out
+          self._l.delete(child_out)
+          child_out = None
+
         parent._right = child
+
+
     self._size -= 1
+
     node._parent = node              # convention for deprecated node
+
     return node._element
 
   def _attach(self, p, t1, t2):

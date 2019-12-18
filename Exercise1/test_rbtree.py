@@ -1,14 +1,15 @@
 from TdP_collections.map.red_black_tree import RedBlackTreeMap
 if __name__=="__main__":
+    #l=PositionalList()
     tree = RedBlackTreeMap()
 
 
-
+    l = tree._l
     p1 = tree.add(43)
     p2 = tree.add(45)
     p3 = tree.add(44)
 
-    l = tree._l
+    #l = tree._l
     f7 = l.first()
     f10 = l.after(f7)
     f8 = l.after(f10)
@@ -28,5 +29,21 @@ if __name__=="__main__":
     print(left_child._node._right_out == f10)
     print(right_child._node._left_out == f8)
     print(right_child._node._right_out == f9)
+    print("Len lista: ",len(l))
+    print("================= DELETE ==================")
 
-    
+
+    tree.delete(right_child)
+    print(left_child._node._left_out == f7)
+    print(left_child._node._right_out == f10)
+    print(root._node._right_out==f9)
+    print(root._node._left_out is None)
+    print("Len lista: ", len(l))
+    print(f7._node._parent==left_child)
+    print(f10._node._parent==left_child)
+    print(f9._node._parent==root)
+
+    print(f7._node._parent.key())
+    print(f10._node._parent.key())
+    print(f9._node._parent.key())
+

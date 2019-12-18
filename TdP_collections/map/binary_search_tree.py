@@ -28,8 +28,8 @@ class TreeMap(LinkedBinaryTree, MapBase):
   """Sorted map implementation using a binary search tree."""
 
   def __init__(self, lista=None):
-    super(TreeMap, self).__init__()
-    self._l = lista if lista is not None else PositionalList()
+    super(TreeMap, self).__init__(lista)
+    #self._l = lista if lista is not None else PositionalList()
 
   #---------------------------- override Position class ----------------------------
   class Position(LinkedBinaryTree.Position):
@@ -395,8 +395,10 @@ class TreeMap(LinkedBinaryTree, MapBase):
 
       if(self.left(y) == z):
         z._node._right_out = y._node._left_out
+        y._node._left_out._node._parent = z
       else:
         z._node._left_out = y._node._right_out
+        y._node._right_out._node._parent = z
 
       y._node._left_out=None
       y._node._right_out = None
@@ -410,9 +412,13 @@ class TreeMap(LinkedBinaryTree, MapBase):
       if(self.left(x) == y):
         y._node._right_out = x._node._left_out
         z._node._left_out = x._node._right_out
+        x._node._left_out._node._parent = y
+        x._node._right_out._node._parent = z
       else:
         y._node._left_out = x._node._right_out
         z._node._right_out = x._node._left_out
+        x._node._right_out._node._parent = y
+        x._node._left_out._node._parent = z
 
       x._node._left_out = None
       x._node._right_out = None
