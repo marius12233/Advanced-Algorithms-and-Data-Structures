@@ -21,9 +21,15 @@
 
 from ..tree.linked_binary_tree import LinkedBinaryTree
 from .map_base import MapBase
+from TdP_collections.list.positional_list import PositionalList
+
 
 class TreeMap(LinkedBinaryTree, MapBase):
   """Sorted map implementation using a binary search tree."""
+
+  def __init__(self, lista=None):
+    super(TreeMap, self).__init__()
+    self._l = lista if lista is not None else PositionalList()
 
   #---------------------------- override Position class ----------------------------
   class Position(LinkedBinaryTree.Position):
@@ -34,6 +40,7 @@ class TreeMap(LinkedBinaryTree, MapBase):
     def value(self):
       """Return value of map's key-value pair."""
       return self.element()._value
+
 
   #------------------------------- nonpublic utilities -------------------------------
   def _subtree_search(self, p, k):
@@ -134,8 +141,43 @@ class TreeMap(LinkedBinaryTree, MapBase):
       p = self._subtree_search(self.root(), k)
       self._rebalance_access(p)                  # hook for balanced tree subclasses
       if k != p.key():
-        raise KeyError('Key Error: ' + repr(k))
-      return p.value()
+        #raise KeyError('Key Error: ' + repr(k))
+        pass
+      return p
+
+  def add(self, k):
+    """Assign value v to key k, overwriting existing value if present."""
+    if self.is_empty():
+      #Popola la doubly linked list con i primi due valori
+      f1 = self._l.add_last(None)
+      f2 = self._l.add_last(None)
+      leaf = self._add_root(self._Item(k,k), left_out=f1, right_out=f2)     # from LinkedBinaryTree
+      f1._node._parent = leaf
+      f2._node._parent = leaf
+    else:
+      p = self._subtree_search(self.root(), k)
+      if p.key() == k:
+        #p.element()._value = v                   # replace existing item's value
+        self._rebalance_access(p)                # hook for balanced tree subclasses
+        return
+      else:
+        item = self._Item(k,k)
+        if p.key() < k:
+          #Il nuovo elemento nella lista deve stare a destra di quello puntato da p
+          f_p = p._node._right_out
+          new_fp = self._l.add_after(f_p, None)
+          leaf = self._add_right(p, item, right_out=new_fp)        # inherited from LinkedBinaryTree
+          new_fp._node._parent = leaf
+          f_p._node._parent = leaf
+        else:
+          f_p = p._node._left_out
+          new_fp = self._l.add_before(f_p, None)
+          leaf = self._add_left(p, item, left_out=new_fp)         # inherited from LinkedBinaryTree
+          new_fp._node._parent = leaf
+          f_p._node._parent = leaf
+
+    self._rebalance_insert(leaf)                 # hook for balanced tree subclasses
+    return leaf
 
   def __setitem__(self, k, v):
     """Assign value v to key k, overwriting existing value if present."""
@@ -285,8 +327,16 @@ class TreeMap(LinkedBinaryTree, MapBase):
     """Relink parent node with child node (we allow child to be None)."""
     if make_left_child:                           # make it a left child
       parent._left = child
+      if child is not None and child._left_out is None and parent._left_out is not None:
+        child._left_out=parent._left_out
+        parent._left_out=None
+
+
     else:                                         # make it a right child
       parent._right = child
+      if child is not None and child._right_out is None and parent._right_out is not None:
+        child._right_out=parent._right_out
+        parent._right_out=None
     if child is not None:                         # make child point to parent
       child._parent = parent
 

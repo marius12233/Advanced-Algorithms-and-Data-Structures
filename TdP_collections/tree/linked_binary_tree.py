@@ -27,13 +27,16 @@ class LinkedBinaryTree(BinaryTree):
   #-------------------------- nested _Node class --------------------------
   class _Node:
     """Lightweight, nonpublic class for storing a node."""
-    __slots__ = '_element', '_parent', '_left', '_right' # streamline memory usage
+    __slots__ = '_element', '_parent', '_left', '_right', '_left_out', '_right_out' # streamline memory usage
 
-    def __init__(self, element, parent=None, left=None, right=None):
+    def __init__(self, element, parent=None, left=None, right=None, left_out=None, right_out=None):
       self._element = element
       self._parent = parent
       self._left = left
       self._right = right
+      self._left_out = left_out
+      self._right_out = right_out
+
 
   #-------------------------- nested Position class --------------------------
   class Position(BinaryTree.Position):
@@ -108,7 +111,7 @@ class LinkedBinaryTree(BinaryTree):
     return count
 
   #-------------------------- nonpublic mutators --------------------------
-  def _add_root(self, e):
+  def _add_root(self, e, left_out=None, right_out=None):
     """Place element e at the root of an empty alberi and return new Position.
 
     Raise ValueError if alberi nonempty.
@@ -116,10 +119,10 @@ class LinkedBinaryTree(BinaryTree):
     if self._root is not None:
       raise ValueError('Root exists')
     self._size = 1
-    self._root = self._Node(e)
+    self._root = self._Node(e, left_out=left_out, right_out=right_out)
     return self._make_position(self._root)
 
-  def _add_left(self, p, e):
+  def _add_left(self, p, e, left_out=None):
     """Create a new left child for Position p, storing element e.
 
     Return the Position of new node.
@@ -129,10 +132,14 @@ class LinkedBinaryTree(BinaryTree):
     if node._left is not None:
       raise ValueError('Left child exists')
     self._size += 1
-    node._left = self._Node(e, node)                  # node is its parent
+    node._left = self._Node(e, node, right_out = node._left_out)                  # node is its parent
+    child=node._left
+    #Remove the left_out ref of the parent
+    node._left_out=None
+    child._left_out=left_out
     return self._make_position(node._left)
 
-  def _add_right(self, p, e):
+  def _add_right(self, p, e, right_out=None):
     """Create a new right child for Position p, storing element e.
 
     Return the Position of new node.
@@ -142,7 +149,12 @@ class LinkedBinaryTree(BinaryTree):
     if node._right is not None:
       raise ValueError('Right child exists')
     self._size += 1
-    node._right = self._Node(e, node)                 # node is its parent
+    #Il right_out del padre diventa il left_out del nuovo figlio
+    node._right = self._Node(e, node, left_out = node._right_out)                 # node is its parent
+    node._right_out=None
+    child = node._right
+    # Aggiorniamo il right out del figlio con il nuovo elemento nella lista
+    child._right_out = right_out
     return self._make_position(node._right)
 
   def _replace(self, p, e):

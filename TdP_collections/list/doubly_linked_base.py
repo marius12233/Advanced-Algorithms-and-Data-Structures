@@ -26,12 +26,13 @@ class _DoublyLinkedBase:
   # nested _Node class
   class _Node:
     """Lightweight, nonpublic class for storing a doubly linked node."""
-    __slots__ = '_element', '_prev', '_next'            # streamline memory
+    __slots__ = '_element', '_prev', '_next', '_parent'           # streamline memory
 
-    def __init__(self, element, prev, next):            # initialize node's fields
+    def __init__(self, element, prev, next, parent=None):            # initialize node's fields
       self._element = element                           # user's element
       self._prev = prev                                 # previous node reference
       self._next = next                                 # next node reference
+      self._parent = parent
 
   #-------------------------- list constructor --------------------------
 

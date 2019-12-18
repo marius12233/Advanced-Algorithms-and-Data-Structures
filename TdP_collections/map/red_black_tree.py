@@ -29,8 +29,8 @@ class RedBlackTreeMap(TreeMap):
     """Node class for red-black tree maintains bit that denotes color."""
     __slots__ = '_red'     # add additional data member to the Node class
 
-    def __init__(self, element, parent=None, left=None, right=None):
-      super().__init__(element, parent, left, right)
+    def __init__(self, element, parent=None, left=None, right=None, left_out=None, right_out=None):
+      super().__init__(element, parent, left, right, left_out, right_out)
       self._red = True     # new node red by default
 
   #------------------------- positional-based utility methods -------------------------
