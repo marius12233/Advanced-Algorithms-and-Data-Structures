@@ -22,7 +22,11 @@ if __name__=="__main__":
     print(left_child.key())
     print(right_child.key())
 
-    print(root._node._left_out)
-    print(root._node._right_out)
-    print(left_child._node._left_out is f9)
+    print(root._node._left_out is None)
+    print(root._node._right_out is None)
+    print(left_child._node._left_out == f7)
+    print(left_child._node._right_out == f10)
+    print(right_child._node._left_out == f8)
+    print(right_child._node._right_out == f9)
+
     

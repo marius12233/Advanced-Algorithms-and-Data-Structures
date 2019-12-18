@@ -327,16 +327,8 @@ class TreeMap(LinkedBinaryTree, MapBase):
     """Relink parent node with child node (we allow child to be None)."""
     if make_left_child:                           # make it a left child
       parent._left = child
-      if child is not None and child._left_out is None and parent._left_out is not None:
-        child._left_out=parent._left_out
-        parent._left_out=None
-
-
     else:                                         # make it a right child
       parent._right = child
-      if child is not None and child._right_out is None and parent._right_out is not None:
-        child._right_out=parent._right_out
-        parent._right_out=None
     if child is not None:                         # make child point to parent
       child._parent = parent
 
@@ -400,8 +392,31 @@ class TreeMap(LinkedBinaryTree, MapBase):
     z = self.parent(y)
     if (x == self.right(y)) == (y == self.right(z)):  # matching alignments
       self._rotate(y)                                 # single rotation (of y)
+
+      if(self.left(y) == z):
+        z._node._right_out = y._node._left_out
+      else:
+        z._node._left_out = y._node._right_out
+
+      y._node._left_out=None
+      y._node._right_out = None
+
+
       return y                                        # y is new subtree root
     else:                                             # opposite alignments
       self._rotate(x)                                 # double rotation (of x)
       self._rotate(x)
+
+      if(self.left(x) == y):
+        y._node._right_out = x._node._left_out
+        z._node._left_out = x._node._right_out
+      else:
+        y._node._left_out = x._node._right_out
+        z._node._right_out = x._node._left_out
+
+      x._node._left_out = None
+      x._node._right_out = None
+
+
+
       return x                                        # x is new subtree root
