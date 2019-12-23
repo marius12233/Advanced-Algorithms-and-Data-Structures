@@ -111,3 +111,28 @@ class RedBlackTreeMap(TreeMap):
         self._fix_deficit(z, self.left(z))
       else:
         self._fix_deficit(z, self.right(z))
+
+
+  def catenate(self, tree, pivot):
+    tree.add(pivot)
+
+
+  def split(self, p):
+    predecessor = self.before(p)
+    successor = self.after(p)
+
+    T1 = RedBlackTreeMap()
+    root1 = predecessor.left()._node
+    root1._node._right_out = p._node._left_out
+    T1._root = root1
+    self.catenate(T1, predecessor)
+
+    T2 = RedBlackTreeMap()
+    root2 = successor.right()._node
+    root2._node._left_out = p._node._right_out
+    T2._root = root2
+    self.catenate(T2, successor)
+
+    return T1, T2
+
+

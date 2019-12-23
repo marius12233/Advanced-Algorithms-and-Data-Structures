@@ -104,6 +104,23 @@ class LinkedBinaryTree(BinaryTree):
     node = self._validate(p)
     return self._make_position(node._right)
 
+  def left_out(self, p):
+    node = self._validate(p)
+    return node._left_out
+
+  def right_out(self, p):
+    node = self._validate(p)
+    return node._right_out
+
+  def set_left_out(self,p , left_out):
+    node = self._validate(p)
+    node._left_out = left_out
+
+  def set_right_out(self, p, right_out):
+    node = self._validate(p)
+    node._right_out = right_out
+
+
   def num_children(self, p):
     """Return the number of children of Position p."""
     node = self._validate(p)
