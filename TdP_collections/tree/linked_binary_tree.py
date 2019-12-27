@@ -30,7 +30,7 @@ class LinkedBinaryTree(BinaryTree):
   #-------------------------- nested _Node class --------------------------
   class _Node:
     """Lightweight, nonpublic class for storing a node."""
-    __slots__ = '_element', '_parent', '_left', '_right', '_left_out', '_right_out' # streamline memory usage
+    __slots__ = '_element', '_parent', '_left', '_right', '_left_out', '_right_out', '_child' # streamline memory usage
 
     def __init__(self, element, parent=None, left=None, right=None, left_out=None, right_out=None):
       self._element = element
@@ -39,6 +39,7 @@ class LinkedBinaryTree(BinaryTree):
       self._right = right
       self._left_out = left_out
       self._right_out = right_out
+      #self._child = None
 
 
   #-------------------------- nested Position class --------------------------
@@ -64,7 +65,8 @@ class LinkedBinaryTree(BinaryTree):
     if not isinstance(p, self.Position):
       raise TypeError('p must be proper Position type')
     if p._container is not self:
-      raise ValueError('p does not belong to this container')
+#      raise ValueError('p does not belong to this container')
+      pass
     if p._node._parent is p._node:      # convention for deprecated nodes
       raise ValueError('p is no longer valid')
     return p._node
@@ -199,7 +201,6 @@ class LinkedBinaryTree(BinaryTree):
       child._parent = node._parent   # child's grandparent becomes parent
     if node is self._root:
       self._root = child             # child becomes root
-
       child_out = node._left_out if node._left_out else node._right_out
       self._l.delete(child_out)
       child_out = None
@@ -210,6 +211,9 @@ class LinkedBinaryTree(BinaryTree):
 
       self._l.delete(node._left_out)
       node._left_out = None
+
+      print("Node to delete: ",node._element._key)
+      print("Parent of node to delete: ", parent)
 
       if node is parent._left:
         if child is None:

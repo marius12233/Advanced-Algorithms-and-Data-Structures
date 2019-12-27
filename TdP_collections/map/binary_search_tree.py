@@ -165,6 +165,8 @@ class TreeMap(LinkedBinaryTree, MapBase):
         if p.key() < k:
           #Il nuovo elemento nella lista deve stare a destra di quello puntato da p
           f_p = p._node._right_out
+          print(f_p)
+
           new_fp = self._l.add_after(f_p, None)
           leaf = self._add_right(p, item, right_out=new_fp)        # inherited from LinkedBinaryTree
           new_fp._node._parent = leaf
@@ -395,10 +397,12 @@ class TreeMap(LinkedBinaryTree, MapBase):
 
       if(self.left(y) == z):
         z._node._right_out = y._node._left_out
-        y._node._left_out._node._parent = z
+        if y._node._left_out is not None:
+          y._node._left_out._node._parent = z
       else:
         z._node._left_out = y._node._right_out
-        y._node._right_out._node._parent = z
+        if y._node._right_out is not None:
+          y._node._right_out._node._parent = z
 
       y._node._left_out=None
       y._node._right_out = None
@@ -422,7 +426,6 @@ class TreeMap(LinkedBinaryTree, MapBase):
 
       x._node._left_out = None
       x._node._right_out = None
-
 
 
       return x                                        # x is new subtree root

@@ -27,16 +27,30 @@ class RedBlackTreeMap(TreeMap):
   #-------------------------- nested _Node class --------------------------
   class _Node(TreeMap._Node):
     """Node class for red-black tree maintains bit that denotes color."""
-    __slots__ = '_red'     # add additional data member to the Node class
+    __slots__ = '_red', '_black_height'     # add additional data member to the Node class
 
     def __init__(self, element, parent=None, left=None, right=None, left_out=None, right_out=None):
       super().__init__(element, parent, left, right, left_out, right_out)
       self._red = True     # new node red by default
+      self._black_height=1 # new node has black children, so its black height is initially 1
 
   #------------------------- positional-based utility methods -------------------------
   # we consider a nonexistent child to be trivially black
-  def _set_red(self, p): p._node._red = True
-  def _set_black(self, p): p._node._red = False
+  def _set_red(self, p):
+      if p is None:
+          return
+      if p._node._red == False:
+          p._node._black_height-=1
+          self._update_black_height(p)
+      p._node._red = True
+  def _set_black(self, p):
+      if p is None:
+          return
+      if p._node._red==True:
+          p._node._black_height += 1
+          self._update_black_height(p)
+      p._node._red = False
+
   def _set_color(self, p, make_red): p._node._red = make_red
   def _is_red(self, p): return p is not None and p._node._red
   def _is_red_leaf(self, p): return self._is_red(p) and self.is_leaf(p)
@@ -49,8 +63,21 @@ class RedBlackTreeMap(TreeMap):
     return None
 
   #------------------------- support for insertions -------------------------
+
+  def _update_black_height(self, p):
+    print("Called on ", p.key())
+    p = self.parent(p)
+    while p is not None:
+        delta_black_height = 0 if p._node._red else 1
+        left_black_height = self.left(p)._node._black_height if self.left(p) is not None else 1
+        right_black_height = self.right(p)._node._black_height if self.right(p) is not None else 1
+        p._node._black_height = max( left_black_height, right_black_height) + delta_black_height
+        p = self.parent(p)
+
+
   def _rebalance_insert(self, p):
     self._resolve_red(p)                         # new node is always red
+    #self._update_black_height(p)
 
   def _resolve_red(self, p):
     if self.is_root(p):
@@ -70,6 +97,9 @@ class RedBlackTreeMap(TreeMap):
           self._set_black(self.left(grand))      # its children become black
           self._set_black(self.right(grand))
           self._resolve_red(grand)               # recur at red grandparent
+      else:
+          self._update_black_height(p)
+
 
   #------------------------- support for deletions -------------------------
   def _rebalance_delete(self, p):
@@ -112,27 +142,147 @@ class RedBlackTreeMap(TreeMap):
       else:
         self._fix_deficit(z, self.right(z))
 
+  def catenate(self, T, pivot, left=True, T2=None):
+    if T2 is None:
+        p = T.add(pivot.key())
 
-  def catenate(self, tree, pivot):
-    tree.add(pivot)
+        if left:
+          p._node._right_out = pivot._node._right_out
+        else:
+          p._node._left_out = pivot._node._left_out
+    else:
+        pivot._node._left_out = None
+        pivot._node._right_out = None
+        root =  T2.root()
+        black_height = root._node._black_height
+        p = self._find_black_height(T, black_height=black_height, left=left)
+        #nel caso in cui la black height uguale a black_height è maggiore o il nodo è rosso
+        #significa che il nodo che dobbiamo rendere fratello della root di T2 è una foglia, quindi None
+        if(p._node._black_height > black_height or p._node._red):
+            raise NotImplementedError("Not yet implemented")
+        else:
+            parent = T.parent(p)
+            if left:
+                self._attach_left(p, parent, pivot, root, T)
+            else:
+                self._attach_right(p, parent, pivot, root, T)
+
+
+
+  def _attach_left(self, p, parent, pivot, root, T):
+      pivot._node._left = root._node
+      pivot._node._right = p._node
+      root._node._parent = pivot._node
+      p._node._parent = pivot._node
+      if parent is None:
+          T._root = pivot._node
+          pivot._node._parent = None
+          pivot._node._red = False
+          pivot._node._black_height = max(T.left(pivot)._node._black_height, T.right(pivot)._node._black_height)
+      else:
+          pivot._node._parent = parent._node
+          parent._node._left = pivot._node
+          T._root = parent._node
+          parent._node._red = False
+          pivot._node._red = True
+          T._rebalance_insert(pivot)
+
+
+  def _attach_right(self, p, parent, pivot, root, T):
+      pivot._node._left = p._node
+      pivot._node._right = root._node
+      root._node._parent = pivot._node
+      p._node._parent = pivot._node
+      if parent is None:
+          T._root = pivot
+          pivot._node._parent = None
+          pivot._node._red=False
+          self._update_black_height(p)
+          #pivot._node._black_height = max(T.left(pivot)._node._black_height, T.right(pivot)._node._black_height)
+      else:
+          pivot._node._parent = parent._node
+          parent._node._right = pivot._node
+          T._root = parent._node
+          pivot._node._red = True
+          T._rebalance_insert(pivot)
+
+
+  def _find_black_height(self, T, black_height=1, left=True):
+      """
+      :param T: Tree in which search for a node with black height black_height
+      :param black_height: int
+      :param left: parameter to say if search in leftmost or rightmost tree
+      :return: position of a node that has black height = black_height
+      """
+      p = T.root()
+
+      while p is not None:
+        if p._node._black_height == black_height and p._node._red==False:
+            return p
+        if p._node._black_height < black_height:
+            raise ValueError("There is no element with this black height")
+        else:
+            if left:
+                if T.left(p) is None:
+                    return p
+                p = T.left(p)
+            else:
+                if T.right(p) is None:
+                    return p
+                p = T.right(p)
 
 
   def split(self, p):
-    predecessor = self.before(p)
-    successor = self.after(p)
 
-    T1 = RedBlackTreeMap()
-    root1 = predecessor.left()._node
-    root1._node._right_out = p._node._left_out
-    T1._root = root1
-    self.catenate(T1, predecessor)
+    T1 = RedBlackTreeMap(self._l)
+    T2 = RedBlackTreeMap(self._l)
 
-    T2 = RedBlackTreeMap()
-    root2 = successor.right()._node
-    root2._node._left_out = p._node._right_out
-    T2._root = root2
-    self.catenate(T2, successor)
+    if self.is_root(p):
+      T1._root = self.left(p)._node
+      T1._root._parent = None
+      T1._set_black(T1.root())
+      T1._size = self._size//2
 
-    return T1, T2
+      T2._root = self.right(p)._node
+      T2._root._parent = None
+      T2._set_black(T2.root())
+      T2._size = self._size//2
+
+    else:
+
+      predecessor = self.before(p)
+      successor = self.after(p)
+      parent = self.parent(p)
+
+      # Unlink the parent of the median from the median child
+
+      if p == self.left(parent):
+        parent._node._left = None
+      else:
+        parent._node._right = None
+
+      p._node._left = None
+      p._node._right = None
+      p._node._parent = p
+      T1._size = ((self._size//2) if self.is_root(predecessor) else (self._size//2 -1))
+
+      root1 = self.left(predecessor)._node
+      #predecessor._node._right_out = p._node._left_out
+      T1._root = root1
+      T1._root._parent = None
+      T1._root._red = False
+      #T1._set_black(T1.root())
+      self.catenate(T1, predecessor, left=True)
+
+
+      T2._size = ((self._size//2) if self.is_root(successor) else (self._size//2 -1))
+      root2 = self.right(successor)._node
+      #successor._node._left_out = p._node._right_out
+      T2._root = root2
+      T2._root._parent = None
+      T2._root._red = False
+      self.catenate(T2, successor, left=False)
+
+    return (T1, T2)
 
 
