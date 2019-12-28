@@ -44,6 +44,7 @@ class _DoublyLinkedBase:
     self._header._next = self._trailer                  # trailer is after header
     self._trailer._prev = self._header                  # header is before trailer
     self._size = 0                                      # number of elements
+    self._median=None
 
   #-------------------------- public accessors --------------------------
 
@@ -63,6 +64,18 @@ class _DoublyLinkedBase:
     predecessor._next = newest
     successor._prev = newest
     self._size += 1
+
+  if(self.__len__()==1):
+          print("1 ELEMENTO")
+          self._median=newest
+          print(self._median)
+    else:
+          if(self.__len__()%2==0 & before==True):
+              oldMedian=self._median
+              self._median=oldMedian._prev
+          if(self.__len__()%2==0 & before==False):
+              oldMedian=self._median
+              self._median=oldMedian._next
     return newest
 
   def _delete_node(self, node):
