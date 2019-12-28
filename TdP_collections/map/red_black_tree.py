@@ -170,6 +170,10 @@ class RedBlackTreeMap(TreeMap):
 
 
   def _attach_left(self, p, parent, pivot, root, T):
+      print("In attach left")
+      print(p.key())
+      print(parent)
+      print(root.key())
       pivot._node._left = root._node
       pivot._node._right = p._node
       root._node._parent = pivot._node
@@ -189,12 +193,16 @@ class RedBlackTreeMap(TreeMap):
 
 
   def _attach_right(self, p, parent, pivot, root, T):
+      print("In attach right")
+      print(p.key())
+      print(parent)
+      print(root.key())
       pivot._node._left = p._node
       pivot._node._right = root._node
       root._node._parent = pivot._node
       p._node._parent = pivot._node
       if parent is None:
-          T._root = pivot
+          T._root = pivot._node
           pivot._node._parent = None
           pivot._node._red=False
           self._update_black_height(p)

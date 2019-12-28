@@ -187,7 +187,7 @@ class LinkedBinaryTree(BinaryTree):
     node._element = e
     return old
 
-  def _delete(self, p):
+  def _delete(self, p, left=True):
     """Delete the node at Position p, and replace it with its child, if any.
 
     Return the element that had been stored at Position p.
@@ -206,20 +206,29 @@ class LinkedBinaryTree(BinaryTree):
       child_out = None
 
     else:
-      # Il nodo da eliminare è una foglia
       parent = node._parent
 
-      self._l.delete(node._left_out)
-      node._left_out = None
+      if left:
+        self._l.delete(node._left_out)
+        node._left_out = None
+      else:
+        self._l.delete(node._right_out)
+        node._right_out = None
+
 
       print("Node to delete: ",node._element._key)
       print("Parent of node to delete: ", parent)
 
       if node is parent._left:
-        if child is None:
-          right_child_out = node._right_out
-          parent._left_out=right_child_out
-          right_child_out._node._parent=self._make_position(parent)
+        if child is None:                       # Il nodo da eliminare è una foglia ed è figlio sx
+          if left:
+            right_child_out = node._right_out
+            parent._left_out=right_child_out
+            right_child_out._node._parent=self._make_position(parent)
+          else:
+            left_child_out = node._left_out
+            parent._left_out=left_child_out
+            left_child_out._node._parent=self._make_position(parent)
 
         else:
           child_out = node._left_out if node._left_out else node._right_out
@@ -229,9 +238,15 @@ class LinkedBinaryTree(BinaryTree):
         parent._left = child
       else:
         if child is None:
-          right_child_out = node._right_out
-          parent._right_out = right_child_out
-          right_child_out._node._parent = self._make_position(parent)
+          if left:
+            right_child_out = node._right_out
+            parent._right_out = right_child_out
+            right_child_out._node._parent = self._make_position(parent)
+          else:
+            left_child_out = node._left_out
+            parent._right_out = left_child_out
+            left_child_out._node._parent = self._make_position(parent)
+
         else:
           child_out = node._left_out if node._left_out else node._right_out
           self._l.delete(child_out)

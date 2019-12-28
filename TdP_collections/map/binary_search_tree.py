@@ -120,7 +120,7 @@ class TreeMap(LinkedBinaryTree, MapBase):
       self._rebalance_access(p)                  # hook for balanced tree subclasses
       return p
 
-  def delete(self, p):
+  def delete(self, p, left=True):
     """Remove the item at given Position."""
     self._validate(p)                            # inherited from LinkedBinaryTree
     if self.left(p) and self.right(p):           # p has two children
@@ -129,7 +129,7 @@ class TreeMap(LinkedBinaryTree, MapBase):
       p =  replacement
     # now p has at most one child
     parent = self.parent(p)
-    self._delete(p)                              # inherited from LinkedBinaryTree
+    self._delete(p, left)                              # inherited from LinkedBinaryTree
     self._rebalance_delete(parent)               # if root deleted, parent is None
 
   #--------------------- public methods for (standard) map interface ---------------------

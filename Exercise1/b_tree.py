@@ -5,7 +5,7 @@ class BTree(Tree):
 
     class Node():
 
-        __slots__='_tree', '_parent', '_children'
+        __slots__='_tree', '_parent', '_list_parent', '_children'
 
         def __init__(self, tree=None):
             if tree is None:
@@ -60,7 +60,7 @@ class BTree(Tree):
 
             new_p, new_tree_node = self._predecessor_external_subtree(p, tree_node, k)
         else:
-            if p._node._left_out._node._child is not None:
+            if p._node._left_out is not None and p._node._left_out._node._child is not None:
                 new_p, new_tree_node = self.search(p._node._left_out._node._child, k)
             else:
                 if p._node._left is not None:
@@ -73,8 +73,11 @@ class BTree(Tree):
 
         p._node._element = new_p._node._element
         new_tree_node.tree().delete(new_p)
+        self._size -=1
 
-        return new_p, new_tree_node
+        self.check_underflow(tree_node)
+
+        #return new_p, new_tree_node
 
 
     def _predecessor_external_subtree(self, p, tree_node, k):
@@ -111,6 +114,78 @@ class BTree(Tree):
             print("Overflow!")
             self.split(tree_node)
 
+    def check_underflow(self, tree_node):
+        if len(tree_node.tree()) < self._a -1:
+            self.resolve_underflow(tree_node)
+
+    def _immediate_siblings(self, tree_node):
+        if self._root == tree_node:
+            return None
+        child_pos = tree_node._list_parent
+        print("Child position: ", child_pos)
+        children = tree_node._parent.children()
+
+        tnode_before, tnode_after = None, None
+
+        if not child_pos == children.first():
+            tnode_before = children.before(child_pos)._node._child
+
+        if not child_pos == children.last():
+            tnode_after = children.after(child_pos)._node._child
+
+        return tnode_before, tnode_after
+
+
+
+    def resolve_underflow(self, tree_node):
+        tbefore, tafter = self._immediate_siblings(tree_node)
+        if tbefore is not None and len(tbefore.tree()) >= self._a:
+            self.transfer(tree_node, tbefore)
+        elif tafter is not None and len(tafter.tree()) >= self._a:
+            self.transfer(tree_node, tafter, before=False)
+        else:
+            if tbefore is not None:
+                print("FUSION LEFT")
+                self.fusion(tree_node, tbefore, left=True)
+            elif tafter is not None:
+                print("FUSION RIGHT")
+                self.fusion(tree_node, tafter, left=False)
+
+    def transfer(self, tree_node, tree_transfer_node, before=True):
+        w = tree_node
+        s = tree_transfer_node
+        u = tree_node._parent
+        p_parent = tree_node._list_parent._node._parent
+        #tree_node.add(p_parent.key())
+        if before:
+            p_transfer = tree_transfer_node.tree()._subtree_last_position(tree_transfer_node.tree().root())
+        else:
+            p_transfer = tree_transfer_node.tree()._subtree_first_position(tree_transfer_node.tree().root())
+        w.tree().add(p_parent.key())
+        p_parent._node._element = p_transfer._node._element
+        s.tree().delete(p_transfer)
+
+    def fusion(self, tree_node, tree_fusion_node, left=True):
+        # if left == True s is at left of w
+        w = tree_node
+        s = tree_fusion_node
+        u = w._parent
+        p_parent = w._list_parent._node._parent
+        tree = RedBlackTreeMap()
+        p = tree.add(p_parent.key())
+        if left:
+
+            w._tree.catenate(w._tree, p, left=False, T2=s._tree)
+            #w._children = s._tree._l
+            #w.add(p_parent.key())
+
+        else:
+            s.add(p_parent.key())
+
+        u.tree().delete(p_parent)
+
+
+
 
     def split(self, tree_node):
         # Qui mi serve il mediano (p = median(tree_node))
@@ -126,33 +201,58 @@ class BTree(Tree):
         node_left = self.Node(T1)
         node_right = self.Node(T2)
 
-        print("Node left: ", node_left.tree().root().key())
-        print("Node right: ", node_right.tree().root().key())
-        print("Tree Node parent ", tree_node._parent)
 
         if tree_node._parent is None:   #Sono la radice
-            print("Cambio figlio della radice")
             tree_parent = RedBlackTreeMap()
-            tree_parent.add(p.key())
+            np = tree_parent.add(p.key())
             node_parent = self.Node(tree_parent)
             self._root = node_parent
             tree_node._parent = tree_node
-            node_parent._children.first()._node._child = node_left
+
+            np._node._left_out._node._child = node_left
             node_left._parent = node_parent
-            node_parent._children.last()._node._child = node_right
+            node_left._list_parent = np._node._left_out
+
+            self._update_children(node_left)
+
+            np._node._right_out._node._child = node_right
             node_right._parent = node_parent
+            node_right._list_parent = np._node._right_out
+
+            self._update_children(node_right)
+
             self._num_node += 2
 
             #parent._child = node_parent
         else:
             node_parent = tree_node._parent
             new_p = node_parent.tree().add(p.key())
+
             new_p._node._left_out._node._child = node_left
             node_left._parent = node_parent
+            node_left._list_parent = new_p._node._left_out
+
+            self._update_children(node_left)
+
+
             new_p._node._right_out._node._child = node_right
             node_right._parent = node_parent
+            node_right._list_parent = new_p._node._right_out
+
+            self._update_children(node_right)
+
+
             self._num_node += 1
             self.check_overflow(node_parent)
+
+
+
+    def _update_children(self, node):
+        children = node.children()
+        if children.first() is not None and children.first()._node._child is not None:
+            for child in node.children():
+                child._node._child._parent = node
+
 
     def root(self):
         return self._root
@@ -165,51 +265,162 @@ class BTree(Tree):
 
 if __name__=='__main__':
 
+
+
     btree = BTree()
     btree.add(10)
-    print(btree.root().tree().root().key())
-    for child in btree.children(btree.root()):
-        print(child)
     btree.add(15)
     btree.add(5)
     btree.add(20)
-    #print(btree.root().tree().right(btree.root().tree().root()))
-    for child in btree.children(btree.root()):
-        print(child)
 
-    print("Nodi nella radice")
-
-    for elems in btree.root().elements():
-        print(elems)
-
-    children_list = btree.root().children()
-    node1 = children_list.first()._node._child
-    node2 = children_list.last()._node._child
-    print(type(node1))
-    print("Nodo sx")
-    for elems in node1.elements():
-        print(elems)
-
-    print("Nodo dx")
-    for elems in node2.elements():
-        print(elems)
-
-    btree.add(25)
     btree.add(30)
+    btree.add(40)
     btree.add(50)
     btree.add(60)
     btree.add(70)
     btree.add(80)
+    btree.add(55)
+    btree.delete(80)
+    btree.delete(70)
+    #btree.delete(60)
+    #btree.delete(80)
+    root = btree._root
 
-    p, treeNode = btree.delete(80)
+    print("="*20, "ROOT", "="*20)
+
+    for elems in root.elements():
+        print(elems)
+
+    children_list = btree.root().children()
+
+    node1 = children_list.first()._node._child
+    node2 = children_list.last()._node._child
 
 
-    print("DELETION")
+    print("=" * 20, "LV1", "=" * 20)
 
-    print(p.key())
-    print(treeNode.tree()._size)
-    print("# elements: ",btree._size)
-    print("# nodes: ", btree._num_node)
+    print("Node 1")
+    for elems in node1.elements():
+        print(elems)
+
+    print("Node 2")
+    for elems in node2.elements():
+        print(elems)
+    print("Parent:")
+    parent = node1._parent
+    for elems in parent.elements():
+        print(elems)
+
+    print("LV2 dx")
+    children_list = node2.children()
+    node1 = children_list.before(children_list.before(children_list.last()))._node._child
+    node3 = children_list.last()._node._child
+    node2 = children_list.before(children_list.last())._node._child
+
+    print("Node 1")
+    for elems in node1.elements():
+        print(elems)
+    print("Node 2")
+    for elems in node2.elements():
+        print(elems)
+    print("Node 3")
+    for elems in node3.elements():
+        print(elems)
+    print("Parent:")
+    parent = node2._parent
+    for elems in parent.elements():
+        print(elems)
+
+
+
+
+
+    # print("After fusion")
+    #
+    # print("Node 1")
+    # for elems in node3.elements():
+    #     print(elems)
+    #
+    # print("Node 2")
+    # for elems in node2.elements():
+    #     print(elems)
+
+    #btree.add(60)
+
+
+
+
+    # btree.add(10)
+    # print(btree.root().tree().root().key())
+    # for child in btree.children(btree.root()):
+    #     print(child)
+    # btree.add(15)
+    # btree.add(5)
+    # btree.add(20)
+    # #print(btree.root().tree().right(btree.root().tree().root()))
+    # for child in btree.children(btree.root()):
+    #     print(child)
+    #
+    # print("Nodi nella radice")
+    #
+    # for elems in btree.root().elements():
+    #     print(elems)
+    #
+    # children_list = btree.root().children()
+    # node1 = children_list.first()._node._child
+    # node2 = children_list.last()._node._child
+    # print(type(node1))
+    # print("Nodo sx")
+    # for elems in node1.elements():
+    #     print(elems)
+    #
+    # print("Nodo dx")
+    # for elems in node2.elements():
+    #     print(elems)
+    #
+    # btree.add(25)
+    # btree.add(30)
+    # btree.add(50)
+    # btree.add(60)
+    # btree.add(70)
+    # btree.add(80)
+    #
+    # p, treeNode = btree.delete(80)
+    #
+    #
+    # print("DELETION")
+    #
+    # print(p.key())
+    # print(treeNode.tree()._size)
+    # print("# elements: ",btree._size)
+    # print("# nodes: ", btree._num_node)
+    #
+    # first, second = btree._immediate_siblings(treeNode)
+    # parent = treeNode._parent
+    # print("After deletion: ")
+    # print(first.tree().root().key())
+    # print(treeNode.tree().root().key())
+    # print(parent.tree().root().key())
+    #
+    #
+    # root = btree._root
+    #
+    # print("Parent elements")
+    #
+    #
+    #
+    # for elems in parent.elements():
+    #     print(elems)
+    #
+    # print("Root elements")
+    #
+    #
+    #
+    #
+    # for elems in root.elements():
+    #     print(elems)
+
+
 
 
 
