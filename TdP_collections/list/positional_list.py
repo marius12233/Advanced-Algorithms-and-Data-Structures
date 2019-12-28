@@ -56,7 +56,8 @@ class PositionalList(_DoublyLinkedBase):
     if not isinstance(p, self.Position):
       raise TypeError('p must be proper Position type')
     if p._container is not self:
-      raise ValueError('p does not belong to this container')
+      #raise ValueError('p does not belong to this container')
+      pass
     if p._node._next is None:                  # convention for deprecated nodes
       raise ValueError('p is no longer valid')
     return p._node
@@ -91,7 +92,7 @@ class PositionalList(_DoublyLinkedBase):
     """Generate a forward iteration of the elements of the list."""
     cursor = self.first()
     while cursor is not None:
-      yield cursor.element()
+      yield cursor
       cursor = self.after(cursor)
 
   #------------------------------- mutators -------------------------------
