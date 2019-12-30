@@ -20,7 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .binary_tree import BinaryTree
-from TdP_collections.list.positional_list import PositionalList
+from AADS.TdP_collections.list.positional_list import PositionalList
 
 
 class LinkedBinaryTree(BinaryTree):
@@ -256,7 +256,7 @@ class LinkedBinaryTree(BinaryTree):
 
 
     self._size -= 1
-
+    self._l._computeMedianRemove(p)
     node._parent = node              # convention for deprecated node
 
     return node._element

@@ -97,9 +97,9 @@ class PositionalList(_DoublyLinkedBase):
 
   #------------------------------- mutators -------------------------------
   # override inherited version to return Position, rather than Node
-  def _insert_between(self, e, predecessor, successor):
+  def _insert_between(self, e, predecessor, successor,parent=None):
     """Add element between existing nodes and return new Position."""
-    node = super()._insert_between(e, predecessor, successor)
+    node = super()._insert_between(e, predecessor, successor,parent)
     return self._make_position(node)
 
   def add_first(self, e):
@@ -110,15 +110,17 @@ class PositionalList(_DoublyLinkedBase):
     """Insert element e at the back of the list and return new Position."""
     return self._insert_between(e, self._trailer._prev, self._trailer)
 
-  def add_before(self, p, e):
+  def add_before(self, parent, p, e):
     """Insert element e into list before Position p and return new Position."""
     original = self._validate(p)
-    return self._insert_between(e, original._prev, original)
+    print('Chiamata per: ')
+    print(parent.key())
+    return self._insert_between(e, original._prev, original, parent)
 
-  def add_after(self, p, e):
+  def add_after(self, parent, p, e):
     """Insert element e into list after Position p and return new Position."""
     original = self._validate(p)
-    return self._insert_between(e, original, original._next)
+    return self._insert_between(e, original, original._next, parent)
 
   def delete(self, p):
     """Remove and return the element at Position p."""
@@ -134,6 +136,31 @@ class PositionalList(_DoublyLinkedBase):
     old_value = original._element       # temporarily store old element
     original._element = e               # replace with new element
     return old_value                    # return the old element value
+
+  def _computeMedianAdd(self,leaf,node):
+    super()._computeMedianAdd(leaf,node)
+
+  def _computeMedianRemove(self,leaf):
+    super()._computeMedianRemove(leaf)
+
+#splitto la lista in modo da ottenere due liste, di cui la prima ha head=head della lista e la seconda ha head=mediano per eccesso
+#sappiamo che l'overflow lo otteniamo per una lista pari perchè b è dispari ed è uguale a 7
+  def splitMedian(self):
+
+    l1=PositionalList()
+    l2=PositionalList()
+
+    l1._size=self._size/2
+    l1._header=self._header
+    l1._trailer=self._median._prev
+    l1._median=l1._trailer._prev
+    l2._size=self._size/2
+    l2._header=self._median
+    l2._trailer=self._trailer
+    l2._median=l2._trailer._prev
+
+    return l1,l2
+
 
 if __name__=="__main__":
   l = PositionalList()

@@ -21,7 +21,7 @@
 
 from ..tree.linked_binary_tree import LinkedBinaryTree
 from .map_base import MapBase
-from TdP_collections.list.positional_list import PositionalList
+from AADS.TdP_collections.list.positional_list import PositionalList
 
 
 class TreeMap(LinkedBinaryTree, MapBase):
@@ -132,6 +132,7 @@ class TreeMap(LinkedBinaryTree, MapBase):
     self._delete(p, left)                              # inherited from LinkedBinaryTree
     self._rebalance_delete(parent)               # if root deleted, parent is None
 
+
   #--------------------- public methods for (standard) map interface ---------------------
   def __getitem__(self, k):
     """Return value associated with key k (raise KeyError if not found)."""
@@ -147,38 +148,49 @@ class TreeMap(LinkedBinaryTree, MapBase):
 
   def add(self, k):
     """Assign value v to key k, overwriting existing value if present."""
+    print("la chiave è:")
+    print(k)
     if self.is_empty():
       #Popola la doubly linked list con i primi due valori
+      print("sono nel primo if")
       f1 = self._l.add_last(None)
       f2 = self._l.add_last(None)
       leaf = self._add_root(self._Item(k,k), left_out=f1, right_out=f2)     # from LinkedBinaryTree
       f1._node._parent = leaf
       f2._node._parent = leaf
+      self._l._computeMedianAdd(leaf,f2._node)
     else:
+      print("sono nell'else")
       p = self._subtree_search(self.root(), k)
       if p.key() == k:
         #p.element()._value = v                   # replace existing item's value
         self._rebalance_access(p)                # hook for balanced tree subclasses
         return
       else:
+        print("sono nell'else 2")
         item = self._Item(k,k)
         if p.key() < k:
           #Il nuovo elemento nella lista deve stare a destra di quello puntato da p
           f_p = p._node._right_out
+          print("sono nell'if!!")
           print(f_p)
 
-          new_fp = self._l.add_after(f_p, None)
+          new_fp = self._l.add_after(p, f_p, None) #passo anche p alla lista
           leaf = self._add_right(p, item, right_out=new_fp)        # inherited from LinkedBinaryTree
           new_fp._node._parent = leaf
           f_p._node._parent = leaf
+          self._l._computeMedianAdd(leaf,new_fp._node)
         else:
+          print("sono nell'ultimo else")
           f_p = p._node._left_out
-          new_fp = self._l.add_before(f_p, None)
+          new_fp = self._l.add_before(p, f_p, None)
           leaf = self._add_left(p, item, left_out=new_fp)         # inherited from LinkedBinaryTree
           new_fp._node._parent = leaf
           f_p._node._parent = leaf
+          self._l._computeMedianAdd(leaf,new_fp._node)
 
     self._rebalance_insert(leaf)                 # hook for balanced tree subclasses
+
     return leaf
 
   def __setitem__(self, k, v):

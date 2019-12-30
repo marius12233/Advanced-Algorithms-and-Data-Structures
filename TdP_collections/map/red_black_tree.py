@@ -293,4 +293,11 @@ class RedBlackTreeMap(TreeMap):
 
     return (T1, T2)
 
-
+#questo metodo restituisce il mediano dell'albero
+  def _get_median(self):
+    listmedian=self._l._median
+    #condizione in cui il mediano dell'albero è proprio la root
+    if len(self)%2==0 and listmedian._parent!=listmedian._prev._parent:
+      return self.root()
+    else:
+        return listmedian._parent

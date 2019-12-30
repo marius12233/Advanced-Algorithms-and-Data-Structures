@@ -1,20 +1,161 @@
-from TdP_collections.map.red_black_tree import RedBlackTreeMap
+from AADS.TdP_collections.map.red_black_tree import RedBlackTreeMap
+
 if __name__=="__main__":
     #l=PositionalList()
     tree = RedBlackTreeMap()
     #
     #
-    # l = tree._l
-    # p1 = tree.add(43)
-    # p2 = tree.add(45)
-    # p3 = tree.add(44)
-    #
-    # #l = tree._l
-    # f7 = l.first()
-    # f10 = l.after(f7)
-    # f8 = l.after(f10)
-    # f9 = l.after(f8)
-    #
+    l = tree._l
+    p1 = tree.add(45)
+    print("ELEMENTI NODO:")
+    for element in l:
+        print(element._node._parent.key())
+        print(element._node)
+
+    print("MEDIANO:")
+    print(l._median)
+    print(l._median._parent.key())
+
+    p2=tree.add(48)
+    print("ELEMENTI NODO:")
+    for element in l:
+        print(element._node._parent.key())
+        print(element._node)
+
+    print("MEDIANO:")
+    print(l._median)
+    print(l._median._parent.key())
+    p3=tree.add(44)
+    print("ELEMENTI NODO:")
+    for element in l:
+        print(element._node._parent.key())
+        print(element._node)
+
+    print("MEDIANO:")
+    print(l._median)
+    print(l._median._parent.key())
+    p10 = tree.add(49)
+    print("ELEMENTI NODO:")
+    for element in l:
+        print(element._node._parent.key())
+        print(element._node)
+
+    print("MEDIANO:")
+    print(l._median)
+    print(l._median._parent.key())
+    p9 = tree.add(46)
+    print("ELEMENTI NODO:")
+    for element in l:
+        print(element._node._parent.key())
+        print(element._node)
+
+    print("MEDIANO:")
+    print(l._median)
+    print(l._median._parent.key())
+    p4=tree.add(50)
+    print("ELEMENTI NODO:")
+    for element in l:
+        print(element._node._parent.key())
+        print(element._node)
+
+    print("MEDIANO:")
+    print(l._median)
+    print(l._median._parent.key())
+
+    p11=tree.add(47)
+    print("ELEMENTI NODO:")
+    for element in l:
+        print(element._node._parent.key())
+        print(element._node)
+
+    print("MEDIANO:")
+    print(l._median)
+    print(l._median._parent.key())
+    p5=tree.add(60)
+    print("ELEMENTI NODO:")
+    for element in l:
+        print(element._node._parent.key())
+        print(element._node)
+
+    print("MEDIANO:")
+    print(l._median)
+    print(l._median._parent.key())
+    p6=tree.add(43)
+    print("ELEMENTI NODO:")
+    for element in l:
+        print(element._node._parent.key())
+        print(element._node)
+
+    print("MEDIANO:")
+    print(l._median)
+    print(l._median._parent.key())
+    p7=tree.add(40)
+    print("ELEMENTI NODO:")
+    for element in l:
+        print(element._node._parent.key())
+        print(element._node)
+
+    print("MEDIANO:")
+    print(l._median)
+    print(l._median._parent.key())
+    p8=tree.add(70)
+    print("ELEMENTI NODO:")
+    for element in l:
+        print(element._node._parent.key())
+        print(element._node)
+
+    print("MEDIANO:")
+    print(l._median)
+    print(l._median._parent.key())
+
+
+    tree.delete(p11)
+    for element in l:
+        print(element._node._parent.key())
+        print(element._node)
+
+    print("MEDIANO:")
+    print(l._median)
+    print(l._median._parent.key())
+
+    tree.delete(p4)
+    for element in l:
+        print(element._node._parent.key())
+        print(element._node)
+
+    print("MEDIANO:")
+    print(l._median)
+    print(l._median._parent.key())
+    """
+    print("40-43-44-45-46-48-49-50-60-70")
+    print("MEDIANO:")
+    print(l._median)
+    print(l._median._parent.key())
+    """
+    """    
+    f1 = l.first()
+    f2 = l.after(f1)
+    f3=l.after(f2)
+    f4=l.after(f3)
+    #f8 = l.after(f10)
+    #f9 = l.after(f8)
+    #f11=l.after(f9)
+    #f12=l.after(f11)
+
+    
+    print(f7._node)
+    print(f10._node)
+    print(f8._node)
+    print(f9._node)
+    print(f11._node)
+    print(f12._node)
+    
+
+    print(f1._node)
+    print(f2._node)
+    print(f3._node)
+    print(l._median)
+    """
     # root = tree.root()
     # left_child = tree.left(root)
     # right_child = tree.right(root)
@@ -49,6 +190,7 @@ if __name__=="__main__":
     #
     #
 
+    """
     print("="*20+" ELEMENTI ALBERO "+"="*20)
     p1 = tree.add(50)
     p2 = tree.add(30)
@@ -90,7 +232,7 @@ if __name__=="__main__":
 
 
 
-    # tree.delete(p8)
+   
     # tree.delete(p3)
     # tree.delete(p4)
     # tree.delete(p5)
@@ -171,6 +313,6 @@ if __name__=="__main__":
     # print("size T2: ", len(T2))
     # for pos in T2.breadthfirst():
     #     print(pos.key())
-
+"""
 
 
