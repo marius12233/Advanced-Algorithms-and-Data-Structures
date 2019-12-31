@@ -144,7 +144,9 @@ class RedBlackTreeMap(TreeMap):
 
   def catenate(self, T, pivot, left=True, T2=None):
     if T2 is None:
+        print("PIVOT    : ", pivot, "    key: ", pivot.key())
         p = T.add(pivot.key())
+        print("POSITION OF P AND PIVOT: ", p, pivot)
 
         if left:
           p._node._right_out = pivot._node._right_out
@@ -241,9 +243,10 @@ class RedBlackTreeMap(TreeMap):
 
 
   def split(self, p):
-
-    T1 = RedBlackTreeMap(self._l)
-    T2 = RedBlackTreeMap(self._l)
+    l1, l2 = self._l.splitMedian()
+    #l = self._l
+    T1 = RedBlackTreeMap(l1)
+    T2 = RedBlackTreeMap(l2)
 
     if self.is_root(p):
       T1._root = self.left(p)._node
@@ -262,6 +265,16 @@ class RedBlackTreeMap(TreeMap):
       successor = self.after(p)
       parent = self.parent(p)
 
+
+      print("PREDECESSOR E SUCCESSOR: ")
+      print(predecessor.key())
+      print(successor.key())
+      root1 = self.before(predecessor)._node
+      root2 = self.after(successor)._node
+
+
+
+
       # Unlink the parent of the median from the median child
 
       if p == self.left(parent):
@@ -269,13 +282,39 @@ class RedBlackTreeMap(TreeMap):
       else:
         parent._node._right = None
 
+
+      if predecessor._node._right_out is None:
+        root1._right_out = p._node._left_out
+      else:
+        root1._right_out = predecessor._node._left_out
+      if successor._node._left_out is None:
+        root2._left_out = p._node._right_out
+      else:
+        root2._left_out = successor._node._right_out
+
+
+      if predecessor._node == root1._left:
+          root1._left = None
+      if predecessor._node == root1._right:
+          root1._right = None
+
+      if successor._node == root2._left:
+          root2._left = None
+      if successor._node == root2._right:
+          root2._right = None
+
       p._node._left = None
       p._node._right = None
       p._node._parent = p
-      T1._size = ((self._size//2) if self.is_root(predecessor) else (self._size//2 -1))
+      #T1._size = ((self._size//2) if self.is_root(predecessor) else (self._size//2 -1))
+      print("Lunghezza lista: ", len(l1))
+      T1._size= len(l1) - 2
 
-      root1 = self.left(predecessor)._node
-      #predecessor._node._right_out = p._node._left_out
+      #root1 = self.left(predecessor)._node
+      print("RIGHT OUT: ", predecessor._node._right_out)
+
+      #root1 = self.before(predecessor)._node
+
       T1._root = root1
       T1._root._parent = None
       T1._root._red = False
@@ -283,9 +322,14 @@ class RedBlackTreeMap(TreeMap):
       self.catenate(T1, predecessor, left=True)
 
 
-      T2._size = ((self._size//2) if self.is_root(successor) else (self._size//2 -1))
-      root2 = self.right(successor)._node
-      #successor._node._left_out = p._node._right_out
+      #T2._size = ((self._size//2) if self.is_root(successor) else (self._size//2 -1))
+      T2._size = int(len(l2)-2)
+      #root2 = self.right(successor)._node
+      print("LEFT OUT: ", successor._node._left_out)
+      successor._node._left_out = p._node._right_out
+      #root2 = self.after(successor)._node
+      print("========== ROOT2 ============")
+      print(root2._element._key)
       T2._root = root2
       T2._root._parent = None
       T2._root._red = False
@@ -297,7 +341,7 @@ class RedBlackTreeMap(TreeMap):
   def _get_median(self):
     listmedian=self._l._median
     #condizione in cui il mediano dell'albero è proprio la root
-    if len(self)%2==0 and listmedian._parent!=listmedian._prev._parent:
-      return self.root()
+    if len(self._l)%2==0 and listmedian._parent!=listmedian._prev._parent:
+      return self.before(listmedian._parent)
     else:
         return listmedian._parent

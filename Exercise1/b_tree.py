@@ -26,7 +26,7 @@ class BTree(Tree):
                 yield pos.key()
 
 
-    def __init__(self, a=2, b=4, degree=4):
+    def __init__(self, degree=4):
         self._root = None
         self._size = 0
         self._num_node = 0
@@ -47,7 +47,7 @@ class BTree(Tree):
             return self.search(left_child, k)
         else:
             right_child =  p._node._right_out
-            print("Right child: ",right_child._node._child)
+           # print("Right child: ",right_child._node._child)
             if right_child._node._child is None:     #Non ha un figlio destro
                 return (p, tree_node)
             right_child = right_child._node._child
@@ -189,7 +189,13 @@ class BTree(Tree):
 
     def split(self, tree_node):
         # Qui mi serve il mediano (p = median(tree_node))
-        p = (tree_node.tree().root())
+        #p = (tree_node.tree().root())
+        p = tree_node.tree()._get_median()
+        print("===== TYPE POS MEDIAN=====")
+        print(type(p))
+        print("Value key")
+        print(p.key())
+
 
         T1, T2 = tree_node.tree().split(p)
 
@@ -267,72 +273,98 @@ if __name__=='__main__':
 
 
 
-    btree = BTree()
+    btree = BTree(degree=7)
     btree.add(10)
     btree.add(15)
     btree.add(5)
     btree.add(20)
-
+    #
     btree.add(30)
     btree.add(40)
-    btree.add(50)
+    #btree.add(25)
     btree.add(60)
     btree.add(70)
-    btree.add(80)
+    btree.add(18)
     btree.add(55)
-    btree.delete(80)
-    btree.delete(70)
+    btree.add(19)
+    btree.add(80)
+    btree.add(85)
+    #btree.add(80)
+    #btree.add(90)
+
+    #btree.delete(80)
+    #btree.delete(70)
     #btree.delete(60)
     #btree.delete(80)
     root = btree._root
-
-    print("="*20, "ROOT", "="*20)
-
+    #
+    # print("="*20, "ROOT", "="*20)
+    #
+    print("Elementi nella ROOT")
     for elems in root.elements():
         print(elems)
 
     children_list = btree.root().children()
-
     node1 = children_list.first()._node._child
     node2 = children_list.last()._node._child
 
+    print("Size: ", node1._tree._size)
 
-    print("=" * 20, "LV1", "=" * 20)
-
-    print("Node 1")
+    print("Elementi Node left")
     for elems in node1.elements():
         print(elems)
 
-    print("Node 2")
+
+
+    print("Elementi Node right")
     for elems in node2.elements():
         print(elems)
-    print("Parent:")
-    parent = node1._parent
-    for elems in parent.elements():
-        print(elems)
 
-    print("LV2 dx")
-    children_list = node2.children()
-    node1 = children_list.before(children_list.before(children_list.last()))._node._child
-    node3 = children_list.last()._node._child
-    node2 = children_list.before(children_list.last())._node._child
-
-    print("Node 1")
-    for elems in node1.elements():
-        print(elems)
-    print("Node 2")
-    for elems in node2.elements():
-        print(elems)
-    print("Node 3")
-    for elems in node3.elements():
-        print(elems)
-    print("Parent:")
-    parent = node2._parent
-    for elems in parent.elements():
-        print(elems)
-
-
-
+    print("Size: ", node2._tree._size)
+    # #node4 = children_list.before(children_list.before(children_list.last()))._node._child
+    #
+    # children_list = btree.root().children()
+    #
+    # node1 = children_list.first()._node._child
+    # node2 = children_list.last()._node._child
+    #
+    #
+    # print("=" * 20, "LV1", "=" * 20)
+    #
+    # print("Node 1")
+    # for elems in node1.elements():
+    #     print(elems)
+    #
+    # print("Node 2")
+    # for elems in node2.elements():
+    #     print(elems)
+    # print("Parent:")
+    # parent = node1._parent
+    # for elems in parent.elements():
+    #     print(elems)
+    #
+    # print("LV2 dx")
+    # children_list = node2.children()
+    # node1 = children_list.before(children_list.before(children_list.last()))._node._child
+    # node3 = children_list.last()._node._child
+    # node2 = children_list.before(children_list.last())._node._child
+    #
+    # print("Node 1")
+    # for elems in node1.elements():
+    #     print(elems)
+    # print("Node 2")
+    # for elems in node2.elements():
+    #     print(elems)
+    # print("Node 3")
+    # for elems in node3.elements():
+    #     print(elems)
+    # print("Parent:")
+    # parent = node2._parent
+    # for elems in parent.elements():
+    #     print(elems)
+    #
+    #
+    #
 
 
     # print("After fusion")

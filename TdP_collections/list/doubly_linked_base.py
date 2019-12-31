@@ -65,11 +65,11 @@ class _DoublyLinkedBase:
       print(nodeParent.key())
 
 
-    if (len(self)==1): #il primo aggiornamento del mediano deve essere fatto per eccesso, al secondo elemento della lista
+    if (self._size==1): #il primo aggiornamento del mediano deve essere fatto per eccesso, al secondo elemento della lista
       #quindi per il caso lunghezza=2
       pass
     else:
-      if(len(self)==2):
+      if(self._size==2):
           print("lunghezza = 2")
           self._median=newest #primo settaggio del mediano
           self._medianKey=nodeParent.key()
@@ -80,8 +80,8 @@ class _DoublyLinkedBase:
       else:
           print(self._median._parent.key()) #48
           print(nodeParent.key())           #44
-          print(self.__len__())             #4
-          if(self._medianKey>nodeParent.key() and len(self)%2!=0): #se aggiungo a sinistra e ho una lista dispari
+          print("len: ", self._size)             #4
+          if(self._medianKey>nodeParent.key() and self._size%2!=0): #se aggiungo a sinistra e ho una lista dispari
             print("AGGIORNAMENTO LUNGHEZZA DISPARI, AGGIUNTA A SX")
             oldMedian=self._median
             #if(oldMedian._parent._element>newest._element):
@@ -90,7 +90,7 @@ class _DoublyLinkedBase:
             #self._median._parent=oldMedian._prev._parent
 
 
-          if(len(self)%2==0 and self._medianKey<nodeParent.key()): #la lunghezza è pari e ho aggiunto a destra
+          if(self._size%2==0 and self._medianKey<nodeParent.key()): #la lunghezza è pari e ho aggiunto a destra
             print("AGGIORNAMENTO LUNGHEZZA PARI, AGGIUNTA A DESTRA!")
             oldMedian=self._median
             self._median=oldMedian._next
@@ -108,11 +108,11 @@ class _DoublyLinkedBase:
       print("nodeparent.key iniziale")
       print(nodeParent.key())
 
-    if (self.__len__()==1): #il primo aggiornamento del mediano deve essere fatto per eccesso, al secondo elemento della lista
+    if (self._size==1): #il primo aggiornamento del mediano deve essere fatto per eccesso, al secondo elemento della lista
       #quindi per il caso lunghezza=2
       pass
     else:
-      if(self.__len__()==2):
+      if(self._size==2):
           print("lunghezza = 2")
           self._median=None #eliminazione del mediano=root
           self._medianKey=None
@@ -134,14 +134,14 @@ class _DoublyLinkedBase:
             #self._median._parent=oldMedian._prev._parent
 
 
-          if(self.__len__()%2==0 and self._medianKey>nodeParent.key()): #se elimino a sx e ottengo una lista pari
+          if(self._size%2==0 and self._medianKey>nodeParent.key()): #se elimino a sx e ottengo una lista pari
             print("AGGIORNAMENTO LUNGHEZZA PARI, AGGIUNTA A DESTRA!")
             oldMedian=self._median
             self._median=oldMedian._next
             self._medianKey=oldMedian._next._parent.key()
             #self._median._parent=oldMedian._next._parent
 
-          if(self.__len__()%2==0 and self._median._parent.key()==nodeParent.key()): #se elimino il mediano e ottengo una lista pari
+          if(self._size%2==0 and self._median._parent.key()==nodeParent.key()): #se elimino il mediano e ottengo una lista pari
             oldMedian=self._median
             self._median=oldMedian._next
             self._medianKey=oldMedian._next._parent.key()

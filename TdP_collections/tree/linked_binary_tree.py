@@ -20,7 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .binary_tree import BinaryTree
-from AADS.TdP_collections.list.positional_list import PositionalList
+from TdP_collections.list.positional_list import PositionalList
 
 
 class LinkedBinaryTree(BinaryTree):
@@ -64,6 +64,7 @@ class LinkedBinaryTree(BinaryTree):
     """Return associated node, if position is valid."""
     if not isinstance(p, self.Position):
       raise TypeError('p must be proper Position type')
+        #pass
     if p._container is not self:
 #      raise ValueError('p does not belong to this container')
       pass

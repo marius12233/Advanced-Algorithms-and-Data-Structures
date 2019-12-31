@@ -21,7 +21,7 @@
 
 from ..tree.linked_binary_tree import LinkedBinaryTree
 from .map_base import MapBase
-from AADS.TdP_collections.list.positional_list import PositionalList
+from TdP_collections.list.positional_list import PositionalList
 
 
 class TreeMap(LinkedBinaryTree, MapBase):
@@ -165,13 +165,14 @@ class TreeMap(LinkedBinaryTree, MapBase):
       if p.key() == k:
         #p.element()._value = v                   # replace existing item's value
         self._rebalance_access(p)                # hook for balanced tree subclasses
-        return
+        raise Exception("Existing item")
       else:
         print("sono nell'else 2")
         item = self._Item(k,k)
         if p.key() < k:
           #Il nuovo elemento nella lista deve stare a destra di quello puntato da p
           f_p = p._node._right_out
+          print("Add to p : ", p.key())
           print("sono nell'if!!")
           print(f_p)
 
@@ -182,7 +183,11 @@ class TreeMap(LinkedBinaryTree, MapBase):
           self._l._computeMedianAdd(leaf,new_fp._node)
         else:
           print("sono nell'ultimo else")
+          print("Chiave da aggiungere: ", k)
+          print("Node: ", p.key())
+          print("Is leaf?: ", self.is_leaf(p))
           f_p = p._node._left_out
+          print("fp: ", f_p)
           new_fp = self._l.add_before(p, f_p, None)
           leaf = self._add_left(p, item, left_out=new_fp)         # inherited from LinkedBinaryTree
           new_fp._node._parent = leaf
