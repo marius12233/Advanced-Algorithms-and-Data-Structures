@@ -18,9 +18,9 @@ def min_nodes_install(tree):
             mark[v] = "S/N"
         else:
             dp[v] = [None, None]
-            # dp[v][True] = dp[v][1] means I took parent of v so, I can choose to don't take v
-            # dp[v][False] = dp[v][0] means I don't took parent of v, so I have to take v
-            # Don't take parent of v, so I have to take v -> call all dp of the children of v with state True because the parent v is taken
+            # dp[v][1] means dp[v][True] --> Parent of v is "taken", so I don't take v
+            # dp[v][0] means dp[v][False] --> Parent of v is "not taken", so I have to take v
+            # If we don't take the parent of v, we have to take v --> call all dp of the children of v with state 'True' because the parent v is "taken"
             taken_value = 1 + sum([dp[child][1] for child in tree.children(v)])  # I take it
             not_taken_value = sum([dp[child][0] for child in tree.children(v)])  # I don't take it
             dp[v][0] = taken_value
@@ -31,7 +31,7 @@ def min_nodes_install(tree):
                 mark[v] = "S"
             else:
                 mark[v] = "N"
-
+                
     return find_solution(tree, dp, mark, l)
 
 
@@ -54,7 +54,7 @@ def find_solution(tree, dp, mark, l):
 
                 if tree.is_root(v):
                     for child in tree.children(v):
-                        if mark[child]=="N": # Se c'è un solo figlio che non deve essere preso
+                        if mark[child] == "N": # If there's just one child that has state N
                             installed[v]=True
                             break
 
