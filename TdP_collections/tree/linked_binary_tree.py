@@ -194,6 +194,8 @@ class LinkedBinaryTree(BinaryTree):
     Return the element that had been stored at Position p.
     Raise ValueError if Position p is invalid or p has two children.
     """
+    self._l._computeMedianRemove(p)
+
     node = self._validate(p)
     if self.num_children(p) == 2:
       raise ValueError('Position has two children')
@@ -257,7 +259,6 @@ class LinkedBinaryTree(BinaryTree):
 
 
     self._size -= 1
-    self._l._computeMedianRemove(p)
     node._parent = node              # convention for deprecated node
 
     return node._element

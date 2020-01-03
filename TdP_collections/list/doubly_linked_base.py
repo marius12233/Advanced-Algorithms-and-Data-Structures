@@ -162,7 +162,6 @@ class _DoublyLinkedBase:
     predecessor._next = newest
     successor._prev = newest
     self._size += 1
-
     return newest
 
   def _delete_node(self, node):

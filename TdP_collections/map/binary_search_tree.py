@@ -160,20 +160,21 @@ class TreeMap(LinkedBinaryTree, MapBase):
       f2._node._parent = leaf
       self._l._computeMedianAdd(leaf,f2._node)
     else:
-      print("sono nell'else")
       p = self._subtree_search(self.root(), k)
       if p.key() == k:
         #p.element()._value = v                   # replace existing item's value
         self._rebalance_access(p)                # hook for balanced tree subclasses
-        raise Exception("Existing item")
+        raise Exception("Existing item ", p.key())
+        # self._size +=1
+        # print("Existing item: left-out: ",p._node._left_out)
+        # print("Existing item: right-out: ",p._node._right_out)
+        # return p
       else:
-        print("sono nell'else 2")
         item = self._Item(k,k)
         if p.key() < k:
           #Il nuovo elemento nella lista deve stare a destra di quello puntato da p
           f_p = p._node._right_out
           print("Add to p : ", p.key())
-          print("sono nell'if!!")
           print(f_p)
 
           new_fp = self._l.add_after(p, f_p, None) #passo anche p alla lista

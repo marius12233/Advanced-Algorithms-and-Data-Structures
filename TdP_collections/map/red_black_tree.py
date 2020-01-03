@@ -145,13 +145,20 @@ class RedBlackTreeMap(TreeMap):
   def catenate(self, T, pivot, left=True, T2=None):
     if T2 is None:
         print("PIVOT    : ", pivot, "    key: ", pivot.key())
+        print("LEFT OUT: ", pivot._node._left_out)
+        print("right OUT: ", pivot._node._right_out)
         p = T.add(pivot.key())
         print("POSITION OF P AND PIVOT: ", p, pivot)
+        sibling = self.sibling(p)
+        if p._node._red and not sibling._node._red:
+            self._set_red(sibling)
 
-        if left:
-          p._node._right_out = pivot._node._right_out
-        else:
-          p._node._left_out = pivot._node._left_out
+
+
+        # if left:
+        #   p._node._right_out = pivot._node._right_out
+        # else:
+        #   p._node._left_out = pivot._node._left_out
     else:
         pivot._node._left_out = None
         pivot._node._right_out = None
@@ -225,6 +232,7 @@ class RedBlackTreeMap(TreeMap):
       :return: position of a node that has black height = black_height
       """
       p = T.root()
+      print("Finding black height: ", black_height)
 
       while p is not None:
         if p._node._black_height == black_height and p._node._red==False:
@@ -242,22 +250,46 @@ class RedBlackTreeMap(TreeMap):
                 p = T.right(p)
 
 
-  def split(self, p):
+  def split(self, p, split_root=False):
+    print("ORIGINAL LIST BEFORE SPLITTING")
+    for pos in  self._l:
+        print(pos._node._parent.key())
+
     l1, l2 = self._l.splitMedian()
     #l = self._l
     T1 = RedBlackTreeMap(l1)
     T2 = RedBlackTreeMap(l2)
 
+    print("======= LIST SPLITTING: =======")
+    print("Original LIST: ")
+    print("L1")
+    print("SIZE: ", len( self._l))
+    print("MEDIAN: ", self._l._getMedian()._parent.key())
+
+
+    print("L1")
+    print("SIZE: ", len(l1))
+    for pos in l1:
+        print(pos._node._parent.key(), " IS MEDIAN: ", pos._node==l1._median)
+    print("MEDIAN: ", l1._medianKey)
+
+    print("L2")
+    print("SIZE: ", len(l2))
+    for pos in l2:
+        print(pos._node._parent.key(), " IS MEDIAN: ", pos._node==l2._median)
+    print("MEDIAN: ", l2._medianKey)
+
     if self.is_root(p):
+      print("QUI!!!")
       T1._root = self.left(p)._node
       T1._root._parent = None
       T1._set_black(T1.root())
-      T1._size = self._size//2
+      T1._size = int(len(l1)-2)
 
       T2._root = self.right(p)._node
       T2._root._parent = None
       T2._set_black(T2.root())
-      T2._size = self._size//2
+      T2._size = int(len(l2)-2)
 
     else:
 
@@ -266,7 +298,8 @@ class RedBlackTreeMap(TreeMap):
       parent = self.parent(p)
 
 
-      print("PREDECESSOR E SUCCESSOR: ")
+      print("MEDIAN PREDECESSOR E SUCCESSOR: ")
+      print(p.key())
       print(predecessor.key())
       print(successor.key())
       root1 = self.before(predecessor)._node
@@ -279,38 +312,100 @@ class RedBlackTreeMap(TreeMap):
 
       if p == self.left(parent):
         parent._node._left = None
+        parent._node._left_out = p._node._right_out
       else:
         parent._node._right = None
+        parent._node._right_out = p._node._left_out
+
+      pred_parent = self.parent(predecessor)
+      succ_parent = self.parent(successor)
 
 
-      if predecessor._node._right_out is None:
+      # if predecessor._node._right_out is None:
+      #     pred_parent._node._right_out = p._node._left_out
+      #     predecessor._node._right_out = p._node._left_out
+      # else:
+      #     pred_parent._node._right_out = predecessor._node._left_out
+      # if successor._node._left_out is None:
+      #     succ_parent._node._left_out = p._node._right_out
+      #     successor._node._left_out = p._node._right_out
+      # else:
+      #     succ_parent._node._left_out = successor._node._right_out
+      #
+
+      #
+      if predecessor._node._left_out is None:
         root1._right_out = p._node._left_out
+        root1._right_out._parent = root1
       else:
         root1._right_out = predecessor._node._left_out
-      if successor._node._left_out is None:
+        root1._right_out._parent = root1
+      if successor._node._right_out is None:
         root2._left_out = p._node._right_out
+        root2._left_out._parent = root2
       else:
         root2._left_out = successor._node._right_out
+        root2._left_out._parent = root2
 
 
-      if predecessor._node == root1._left:
-          root1._left = None
-      if predecessor._node == root1._right:
-          root1._right = None
+      # if predecessor._node == root1._left:
+      #     root1._left = None
+      # if predecessor._node == root1._right:
+      #     root1._right = None
 
-      if successor._node == root2._left:
-          root2._left = None
-      if successor._node == root2._right:
-          root2._right = None
+      print("ROOT 1: ",root1._element._key)
+      print("ROOT 2: ", root2._element._key)
+
+      root1._right = None
+      r1_right_out = root1._right_out
+
+
+      root2._left = None
+      r2_left_out = root2._left_out
+
+
+
+      # if successor._node == root2._left:
+      #     root2._left = None
+      # if successor._node == root2._right:
+      #     root2._right = None
+
+      print("PRED: ", predecessor.key())
+      print("SUCC: ", successor.key())
+
+
+      # print("ROOT1: ", root1._element._key)
+      # print("ROOT2: ", root2._element._key)
+      #
+      #
+      # #
+      # if not root1 == pred_parent:
+      #     if predecessor._node == pred_parent._node._left:
+      #         pred_parent._node._left = predecessor._node._right if predecessor._node._right is not None else predecessor._node._left
+      #         pred_parent._node._right_out = predecessor._node._left_out
+      #     if predecessor._node == pred_parent._node._right:
+      #         pred_parent._node._right = predecessor._node._left if predecessor._node._left is not None else predecessor._node._left
+      #         pred_parent._node._left_out = predecessor._node._right_out
+      #
+      # if not root2 == succ_parent:
+      #
+      #     if successor._node == succ_parent._node._left:
+      #         succ_parent._node._left = successor._node._right if successor._node._right is not None else successor._node._left
+      #         succ_parent._node._right_out = successor._node._left_out
+      #     if successor._node == succ_parent._node._right:
+      #         succ_parent._node._right = successor._node._right if successor._node._right is not None else successor._node._left
+      #         succ_parent._node._left_out = successor._node._right_out
+
+
 
       p._node._left = None
       p._node._right = None
       p._node._parent = p
       #T1._size = ((self._size//2) if self.is_root(predecessor) else (self._size//2 -1))
-      print("Lunghezza lista: ", len(l1))
       T1._size= len(l1) - 2
 
       #root1 = self.left(predecessor)._node
+      #predecessor._node._right_out = p._node._left_out
       print("RIGHT OUT: ", predecessor._node._right_out)
 
       #root1 = self.before(predecessor)._node
@@ -322,11 +417,14 @@ class RedBlackTreeMap(TreeMap):
       self.catenate(T1, predecessor, left=True)
 
 
-      #T2._size = ((self._size//2) if self.is_root(successor) else (self._size//2 -1))
+      # if not split_root:
+      #   l1.delete((r1_right_out))
+
+
+      #T2._size = ((len(l2)-1) if self.is_root(successor) else (len(l2)-2))
       T2._size = int(len(l2)-2)
       #root2 = self.right(successor)._node
-      print("LEFT OUT: ", successor._node._left_out)
-      successor._node._left_out = p._node._right_out
+      #successor._node._left_out = p._node._right_out
       #root2 = self.after(successor)._node
       print("========== ROOT2 ============")
       print(root2._element._key)
@@ -335,13 +433,43 @@ class RedBlackTreeMap(TreeMap):
       T2._root._red = False
       self.catenate(T2, successor, left=False)
 
+      print("\nR1 RIGHT OUT: ", r1_right_out._node._parent.key())
+
+      parent1 = r1_right_out._node._parent
+      l1._computeMedianRemove(parent1)
+
+      l1.delete(r1_right_out)
+
+      print("\nR2 LEFT OUT: ", r2_left_out._node._parent.key())
+
+      parent2 = r2_left_out._node._parent
+      l2._computeMedianRemove(parent2)
+
+      l2.delete(r2_left_out)
+
+      # if not split_root:
+      #     print("Eliminerò il nodo in: ", r2_left_out._parent._element._key)
+      #     l2.delete(l2.after(r2_left_out))
+          #l2.delete(l2.before(successor._node._right_out))
+
+      #l2.delete(l2.before(successor._node._right_out))
+
+      print("AFTER SPLIT: R1, R2", r1_right_out._parent._element._key, r2_left_out._parent._element._key)
+
+
     return (T1, T2)
 
 #questo metodo restituisce il mediano dell'albero
   def _get_median(self):
     listmedian=self._l._median
+    print("len lista: ", len(self._l))
     #condizione in cui il mediano dell'albero è proprio la root
-    if len(self._l)%2==0 and listmedian._parent!=listmedian._prev._parent:
+    if len(self._l)%2==0 and not listmedian._parent==listmedian._prev._parent:
+      print("DIVERSO")
+      print(listmedian._parent.key())
+      print(listmedian._prev._parent.key())
       return self.before(listmedian._parent)
     else:
+        print("MEDIANO: ", listmedian._parent.key())
+        print("Prev MEDIAN: ", listmedian._prev._parent.key())
         return listmedian._parent

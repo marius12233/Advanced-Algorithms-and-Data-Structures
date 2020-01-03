@@ -151,13 +151,18 @@ class PositionalList(_DoublyLinkedBase):
     l2=PositionalList()
 
     l1._size=self._size//2
-    l1._header=self._header
-    l1._trailer=self._median._prev
+    l1._header._next=self._header._next
+    l1._trailer._prev=self._median._prev
+    self._header._next._prev = l1._header
+    self._median._prev._next = l1._trailer
     l1._median=l1._trailer._prev
     l1._medianKey=l1._median._parent.key()
+
     l2._size=self._size//2
-    l2._header=self._median
-    l2._trailer=self._trailer
+    l2._header._next=self._median
+    l2._trailer._prev=self._trailer._prev
+    self._median._prev = l2._header
+    self._trailer._prev._next = l2._trailer
     l2._median=l2._trailer._prev
     l2._medianKey=l2._median._parent.key()
 
