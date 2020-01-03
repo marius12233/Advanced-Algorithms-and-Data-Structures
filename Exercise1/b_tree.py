@@ -130,7 +130,6 @@ class BTree(Tree):
 
         if len(tree_node.tree()._l) < self._a:
             print("UNDERFLOW!!!")
-
             self.resolve_underflow(tree_node)
 
     def _immediate_siblings(self, tree_node):
