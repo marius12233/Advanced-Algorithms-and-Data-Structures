@@ -91,6 +91,13 @@ class BTree(Tree):
 
 
     def _predecessor_external_subtree(self, p, tree_node, k):
+        """
+        Find a position with key k in the external subtree
+        :param p: position from start the search
+        :param tree_node: the tree_node
+        :param k:
+        :return:
+        """
         if p._node._left_out._node._child  is None and p._node._right_out._node._child  is None:  # E' una foglia e non ha figli esterni
             return p, tree_node
         else:
