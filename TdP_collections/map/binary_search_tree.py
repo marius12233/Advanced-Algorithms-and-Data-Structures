@@ -41,6 +41,12 @@ class TreeMap(LinkedBinaryTree, MapBase):
       """Return value of map's key-value pair."""
       return self.element()._value
 
+    def __repr__(self):
+      return str(self.element()._key)
+
+    def __str__(self):
+      return str(self.element()._key)
+
 
   #------------------------------- nonpublic utilities -------------------------------
   def _subtree_search(self, p, k):

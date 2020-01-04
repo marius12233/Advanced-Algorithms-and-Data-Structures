@@ -39,6 +39,7 @@ class RedBlackTreeMap(TreeMap):
   def _set_red(self, p):
       if p is None:
           return
+
       if p._node._red == False:
           p._node._black_height-=1
           self._update_black_height(p)
@@ -65,14 +66,18 @@ class RedBlackTreeMap(TreeMap):
   #------------------------- support for insertions -------------------------
 
   def _update_black_height(self, p):
-    print("Called on ", p.key())
-    p = self.parent(p)
-    while p is not None:
-        delta_black_height = 0 if p._node._red else 1
-        left_black_height = self.left(p)._node._black_height if self.left(p) is not None else 1
-        right_black_height = self.right(p)._node._black_height if self.right(p) is not None else 1
-        p._node._black_height = max( left_black_height, right_black_height) + delta_black_height
-        p = self.parent(p)
+    print("Actual p: ", p.key() if p is not None else None, "TYPE: ", p)
+    parent = self.parent(p)
+    while parent is not None:
+        print("NEXT p: ", parent.key() if parent is not None else None, "TYPE: ", parent)
+        delta_black_height = 0 if parent._node._red else 1
+        left_black_height = self.left(parent)._node._black_height if self.left(parent) is not None else 1
+        right_black_height = self.right(parent)._node._black_height if self.right(parent) is not None else 1
+        parent._node._black_height = max( left_black_height, right_black_height) + delta_black_height
+        parent = self.parent(parent)
+
+  def _rebalance_access(self, p):
+      self._update_black_height(p)
 
 
   def _rebalance_insert(self, p):
@@ -91,6 +96,7 @@ class RedBlackTreeMap(TreeMap):
           self._set_black(middle)                # and then fix colors
           self._set_red(self.left(middle))
           self._set_red(self.right(middle))
+
         else:                                    # Case 2: overfull 5-node
           grand = self.parent(parent)
           self._set_red(grand)                   # grandparent becomes red
@@ -102,7 +108,10 @@ class RedBlackTreeMap(TreeMap):
 
 
   #------------------------- support for deletions -------------------------
+
+
   def _rebalance_delete(self, p):
+    print("REBALANCE DELETE CALLING::::")
     if len(self) == 1:
       self._set_black(self.root())  # special case: ensure that root is black
     elif p is not None:
@@ -114,11 +123,13 @@ class RedBlackTreeMap(TreeMap):
       elif n == 2:                  # removed black node with red child
         if self._is_red_leaf(self.left(p)):
           self._set_black(self.left(p))
+
         else:
           self._set_black(self.right(p))
 
   def _fix_deficit(self, z, y):
     """Resolve black deficit at z, where y is the root of z's heavier subtree."""
+    print("\n\nFIX DEFICIT::::::\n\n")
     if not self._is_red(y): # y is black; will apply Case 1 or 2
       x = self._get_red_child(y)
       if x is not None: # Case 1: y is black and has red child x; do "transfer"
@@ -127,6 +138,10 @@ class RedBlackTreeMap(TreeMap):
         self._set_color(middle, old_color)   # middle gets old color of z
         self._set_black(self.left(middle))   # children become black
         self._set_black(self.right(middle))
+        #black height di y non cambia, ma cambia quella di z e x
+        z._node._black_height=x._node._black_height
+        self._update_black_height(self.left(middle))
+
       else: # Case 2: y is black, but no red children; recolor as "fusion"
         self._set_red(y)
         if self._is_red(z):
@@ -142,13 +157,29 @@ class RedBlackTreeMap(TreeMap):
       else:
         self._fix_deficit(z, self.right(z))
 
+  def _node_catenate(self, p):
+      parent = self._subtree_search(self.root(), p.key())
+
+      if parent.key() > p.key():
+          parent._node._left = p._node
+
+      else:
+          parent._node._right = p._node
+      p._node._parent = parent._node
+
+      self._set_red(p)
+      return p
+
   def catenate(self, T, pivot, left=True, T2=None):
     if T2 is None:
-        print("PIVOT    : ", pivot, "    key: ", pivot.key())
-        print("LEFT OUT: ", pivot._node._left_out)
-        print("right OUT: ", pivot._node._right_out)
-        p = T.add(pivot.key())
-        print("POSITION OF P AND PIVOT: ", p, pivot)
+        # print("PIVOT    : ", pivot, "    key: ", pivot.key())
+        # print("LEFT OUT: ", pivot._node._left_out)
+        # print("right OUT: ", pivot._node._right_out)
+
+        p = T._node_catenate(pivot) #T.add(pivot.key())
+
+
+        #print("POSITION OF P AND PIVOT: ", p, pivot)
         sibling = self.sibling(p)
         if p._node._red and not sibling._node._red:
             self._set_red(sibling)
@@ -284,12 +315,12 @@ class RedBlackTreeMap(TreeMap):
       T1._root = self.left(p)._node
       T1._root._parent = None
       T1._set_black(T1.root())
-      T1._size = int(len(l1)-2)
+      T1._size = len(l1)-1
 
       T2._root = self.right(p)._node
       T2._root._parent = None
       T2._set_black(T2.root())
-      T2._size = int(len(l2)-2)
+      T2._size = len(l2)-1
 
     else:
 
@@ -312,10 +343,10 @@ class RedBlackTreeMap(TreeMap):
 
       if p == self.left(parent):
         parent._node._left = None
-        parent._node._left_out = p._node._right_out
+        #parent._node._left_out = p._node._right_out
       else:
         parent._node._right = None
-        parent._node._right_out = p._node._left_out
+        #parent._node._right_out = p._node._left_out
 
       pred_parent = self.parent(predecessor)
       succ_parent = self.parent(successor)
@@ -334,18 +365,28 @@ class RedBlackTreeMap(TreeMap):
       #
 
       #
-      if predecessor._node._left_out is None:
-        root1._right_out = p._node._left_out
-        root1._right_out._parent = root1
-      else:
-        root1._right_out = predecessor._node._left_out
-        root1._right_out._parent = root1
-      if successor._node._right_out is None:
-        root2._left_out = p._node._right_out
-        root2._left_out._parent = root2
-      else:
-        root2._left_out = successor._node._right_out
-        root2._left_out._parent = root2
+      # if predecessor._node._left_out is None:
+      #   root1._right_out = p._node._left_out
+      #   root1._right_out._parent = root1
+      # else:
+      #   root1._right_out = predecessor._node._left_out
+      #   root1._right_out._parent = root1
+      # if successor._node._right_out is None:
+      #   root2._left_out = p._node._right_out
+      #   root2._left_out._parent = root2
+      # else:
+      #   root2._left_out = successor._node._right_out
+      #   root2._left_out._parent = root2
+
+      if predecessor._node._right_out is None:  # Il predecessor non può avere un figlio destro che non sia il mediano p, altrimenti non sarebbe il predecessor
+          predecessor._node._right_out = p._node._left_out
+          predecessor._node._right_out._parent = predecessor
+      if successor._node._left_out is None:    # Il successor non può avere figlio sinistro che non sia il meiano p, altrimenti non sarebbe il successor
+          successor._node._left_out = p._node._right_out
+          successor._node._left_out._parent = successor
+
+
+
 
 
       # if predecessor._node == root1._left:
@@ -402,7 +443,7 @@ class RedBlackTreeMap(TreeMap):
       p._node._right = None
       p._node._parent = p
       #T1._size = ((self._size//2) if self.is_root(predecessor) else (self._size//2 -1))
-      T1._size= len(l1) - 2
+      T1._size= len(l1) - 1
 
       #root1 = self.left(predecessor)._node
       #predecessor._node._right_out = p._node._left_out
@@ -422,7 +463,7 @@ class RedBlackTreeMap(TreeMap):
 
 
       #T2._size = ((len(l2)-1) if self.is_root(successor) else (len(l2)-2))
-      T2._size = int(len(l2)-2)
+      T2._size = len(l2)-1
       #root2 = self.right(successor)._node
       #successor._node._left_out = p._node._right_out
       #root2 = self.after(successor)._node
@@ -433,19 +474,19 @@ class RedBlackTreeMap(TreeMap):
       T2._root._red = False
       self.catenate(T2, successor, left=False)
 
-      print("\nR1 RIGHT OUT: ", r1_right_out._node._parent.key())
+     # print("\nR1 RIGHT OUT: ", r1_right_out._node._parent.key())
 
-      parent1 = r1_right_out._node._parent
-      l1._computeMedianRemove(parent1)
+      #parent1 = r1_right_out._node._parent
+      #l1._computeMedianRemove(parent1)
 
-      l1.delete(r1_right_out)
+      #l1.delete(r1_right_out)
 
-      print("\nR2 LEFT OUT: ", r2_left_out._node._parent.key())
+      #print("\nR2 LEFT OUT: ", r2_left_out._node._parent.key())
 
-      parent2 = r2_left_out._node._parent
-      l2._computeMedianRemove(parent2)
+      #parent2 = r2_left_out._node._parent
+      #l2._computeMedianRemove(parent2)
 
-      l2.delete(r2_left_out)
+      #l2.delete(r2_left_out)
 
       # if not split_root:
       #     print("Eliminerò il nodo in: ", r2_left_out._parent._element._key)
@@ -454,7 +495,7 @@ class RedBlackTreeMap(TreeMap):
 
       #l2.delete(l2.before(successor._node._right_out))
 
-      print("AFTER SPLIT: R1, R2", r1_right_out._parent._element._key, r2_left_out._parent._element._key)
+#      print("AFTER SPLIT: R1, R2", r1_right_out._parent._element._key, r2_left_out._parent._element._key)
 
 
     return (T1, T2)

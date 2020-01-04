@@ -194,7 +194,7 @@ class LinkedBinaryTree(BinaryTree):
     Return the element that had been stored at Position p.
     Raise ValueError if Position p is invalid or p has two children.
     """
-    self._l._computeMedianRemove(p)
+
 
     node = self._validate(p)
     if self.num_children(p) == 2:
@@ -205,6 +205,7 @@ class LinkedBinaryTree(BinaryTree):
     if node is self._root:
       self._root = child             # child becomes root
       child_out = node._left_out if node._left_out else node._right_out
+      self._l._computeMedianRemove(p)
       self._l.delete(child_out)
       child_out = None
 
@@ -212,9 +213,11 @@ class LinkedBinaryTree(BinaryTree):
       parent = node._parent
 
       if left:
+        self._l._computeMedianRemove(p)
         self._l.delete(node._left_out)
         node._left_out = None
       else:
+        self._l._computeMedianRemove(p)
         self._l.delete(node._right_out)
         node._right_out = None
 
@@ -235,6 +238,7 @@ class LinkedBinaryTree(BinaryTree):
 
         else:
           child_out = node._left_out if node._left_out else node._right_out
+          self._l._computeMedianRemove(p)
           self._l.delete(child_out)
           child_out = None
 
@@ -252,6 +256,7 @@ class LinkedBinaryTree(BinaryTree):
 
         else:
           child_out = node._left_out if node._left_out else node._right_out
+          self._l._computeMedianRemove(p)
           self._l.delete(child_out)
           child_out = None
 
@@ -262,6 +267,15 @@ class LinkedBinaryTree(BinaryTree):
     node._parent = node              # convention for deprecated node
 
     return node._element
+
+  def __repr__(self):
+    blank_line = self._size//2
+    string = " "*blank_line + str(self.root()) + " "*blank_line
+
+    return str(self.root())
+
+
+
 
   def _attach(self, p, t1, t2):
     """Attach trees t1 and t2, respectively, as the left and right subtrees of the external Position p.

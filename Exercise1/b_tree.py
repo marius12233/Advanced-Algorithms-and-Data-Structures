@@ -176,7 +176,7 @@ class BTree(Tree):
         w = tree_node
         s = tree_transfer_node
         u = tree_node._parent
-        p_parent = tree_node._list_parent._node._parent
+        p_parent = tree_node._list_parent._node._parent #Position del nodo nell'albero di cui è figlio tree node
         #tree_node.add(p_parent.key())
         if before:
             p_transfer = tree_transfer_node.tree()._subtree_last_position(tree_transfer_node.tree().root())
@@ -326,8 +326,21 @@ if __name__=='__main__':
     btree.add(90)
     btree.add(95)
     btree.add(100)
-    btree.delete(100)
-    #btree.delete(95)
+    btree.add(101)
+    btree.add(102)
+    #print("====== CANCELLO 102========")
+    #btree.delete(102)
+    #btree.delete(90)
+    #btree.add(75)
+    #btree.delete(100)
+    #btree.delete(90)
+    #btree.delete(80)
+    btree.add(120)
+    btree.add(130)
+    for i in range(140, 251, 10):
+        btree.add(i)
+    #btree.add(140)
+    #btree.add(150)
     print(" ADDING 100 ...")
     children_list = btree.root().children()
 
@@ -343,36 +356,36 @@ if __name__=='__main__':
 
     node1 = children_list.first()._node._child #children_list.before(children_list.last())._node._child
     node2 = children_list.last()._node._child
-    print("============= LISTA N1 ===============0")
-    print("LEN L: ", len(node1._tree._l))
-    print("Elements")
-    for pos in node1._tree._l:
-        print(pos)
-        print(pos._node._parent.key())
-        print("Leaf: ",node1._tree.is_leaf(pos._node._parent))
-        print("IS LEFT OUT?: ", pos._node._parent._node._left_out == pos)
-        print("IS right OUT?: ", pos._node._parent._node._right_out == pos)
-        if pos._node._parent._node._left is not None:
-            print("Left: ", node1._tree.left(pos._node._parent).key())
-        if pos._node._parent._node._right is not None:
-            print("Right: ", node1._tree.right(pos._node._parent).key())
-        print("IS MEDIAN: ", node1._tree._l._median == pos._node,  node1._tree._l._median._parent.key())
+    # print("============= LISTA N1 ===============0")
+    # print("LEN L: ", len(node1._tree._l))
+    # print("Elements")
+    # for pos in node1._tree._l:
+    #     print(pos)
+    #     print(pos._node._parent.key())
+    #     print("Leaf: ",node1._tree.is_leaf(pos._node._parent))
+    #     print("IS LEFT OUT?: ", pos._node._parent._node._left_out == pos)
+    #     print("IS right OUT?: ", pos._node._parent._node._right_out == pos)
+    #     if pos._node._parent._node._left is not None:
+    #         print("Left: ", node1._tree.left(pos._node._parent).key())
+    #     if pos._node._parent._node._right is not None:
+    #         print("Right: ", node1._tree.right(pos._node._parent).key())
+    #     print("IS MEDIAN: ", node1._tree._l._median == pos._node,  node1._tree._l._median._parent.key())
 
-
-    print("============= LISTA N2 ===============0")
-    print("LEN L: ", len(node2._tree._l))
-    print("Elements")
-    for pos in node2._tree._l:
-        print(pos)
-        print(pos._node._parent.key())
-        print("Leaf: ",node2._tree.is_leaf(pos._node._parent))
-        print("IS LEFT OUT?: ", pos._node._parent._node._left_out == pos)
-        print("IS right OUT?: ", pos._node._parent._node._right_out == pos)
-        if pos._node._parent._node._left is not None:
-            print("Left: ", node2._tree.left(pos._node._parent).key())
-        if pos._node._parent._node._right is not None:
-            print("Right: ", node2._tree.right(pos._node._parent).key())
-        print("IS MEDIAN: ", node2._tree._l._median == pos._node, node2._tree._l._median._parent.key())
+    #
+    # print("============= LISTA N2 ===============0")
+    # print("LEN L: ", len(node2._tree._l))
+    # print("Elements")
+    # for pos in node2._tree._l:
+    #     print(pos)
+    #     print(pos._node._parent.key())
+    #     print("Leaf: ",node2._tree.is_leaf(pos._node._parent))
+    #     print("IS LEFT OUT?: ", pos._node._parent._node._left_out == pos)
+    #     print("IS right OUT?: ", pos._node._parent._node._right_out == pos)
+    #     if pos._node._parent._node._left is not None:
+    #         print("Left: ", node2._tree.left(pos._node._parent).key())
+    #     if pos._node._parent._node._right is not None:
+    #         print("Right: ", node2._tree.right(pos._node._parent).key())
+    #     print("IS MEDIAN: ", node2._tree._l._median == pos._node, node2._tree._l._median._parent.key())
 
     #btree.add(100)
     # btree.add(105)
@@ -390,7 +403,8 @@ if __name__=='__main__':
     #
     # print("="*20, "ROOT", "="*20)
     #
-    print("Elementi nella ROOT")
+    print("="*20)
+    print("\nElementi nella ROOT")
     for elems in root.positions():
         print(elems.key())
         print("BH: ",elems._node._black_height)
@@ -400,50 +414,83 @@ if __name__=='__main__':
     # children_list = btree.root().children()
     node1 = children_list.first()._node._child
     node2 = children_list.after(children_list.first())._node._child
-    node22 = children_list.after(children_list.after(children_list.first()))._node._child
+    #node22 = children_list.after(children_list.after(children_list.first()))._node._child
     node3 = children_list.before(children_list.last())._node._child
     node4 = children_list.last()._node._child
     #
     #
-    print("Elementi Node left")
+    print("=" * 20)
+    print("\nElementi Node left")
+    print("Size: ", node1._tree._size,"\n")
+
     for elems in node1.positions():
         print(elems.key(), "IS RED: ", elems._node._red)
         print("BH: ", elems._node._black_height)
-    print("Size: ", node1._tree._size)
+    print("\nFIGLI NODE 1")
+    l1 = node1._tree._l
+    print("SIZE: ", len(l1))
+    for pos in l1:
+        print(pos._node._parent.key(), " IS MEDIAN: ", pos._node==l1._median)
+    print("MEDIAN: ", l1._medianKey)
     #
     #
-    print("Elementi Node right")
+    print("="*20)
+    print("\nElementi Node right")
+    print("Size: ", node2._tree._size,"\n")
+
     for elems in node2.positions():
         print(elems.key(), "IS RED: ", elems._node._red)
         print("BH: ", elems._node._black_height)
-    print("Size: ", node2._tree._size)
+    print("\nFIGLI NODE 2")
+    l1 = node2._tree._l
+    print("SIZE: ", len(l1))
+    for pos in l1:
+        print(pos._node._parent.key(), " IS MEDIAN: ", pos._node==l1._median)
+    print("MEDIAN: ", l1._medianKey)
 
 
 
     #
     #
     #
-    print("Elementi Node right")
-    for elems in node22.positions():
-        print(elems.key(), "IS RED: ", elems._node._red)
-        print("BH: ", elems._node._black_height)
-    print("Size: ", node22._tree._size)
+    # print("Size: ", node22._tree._size)
+    #
+    # print("Elementi Node right")
+    # for elems in node22.positions():
+    #     print(elems.key(), "IS RED: ", elems._node._red)
+    #     print("BH: ", elems._node._black_height)
 
 
-    print("Elementi Node right")
+    print("="*20)
+    print("\nElementi Node right")
+    print("Size: ", node3._tree._size,"\n")
     for elems in node3.positions():
         print(elems.key(), "IS RED: ", elems._node._red)
         print("BH: ", elems._node._black_height)
+    print("\nFIGLI NODE 3")
+    l1 = node3._tree._l
+    print("SIZE: ", len(l1))
+    for pos in l1:
+        print(pos._node._parent.key(), " IS MEDIAN: ", pos._node==l1._median)
+    print("MEDIAN: ", l1._medianKey)
 
-    print("Size: ", node3._tree._size)
 
-
-    print("Elementi Node right")
+    print("="*20)
+    print("\nElementi Node 4")
+    print("Size: ", node4._tree._size,"\n")
     for elems in node4.positions():
         print(elems.key(), "IS RED: ", elems._node._red)
         print("BH: ", elems._node._black_height)
+    print("\nFIGLI NODE 4")
+    l1 = node4._tree._l
+    print("SIZE: ", len(l1))
+    for pos in l1:
+        print(pos._node._parent.key(), " IS MEDIAN: ", pos._node==l1._median)
+    print("MEDIAN: ", l1._medianKey)
 
-    print("Size: ", node4._tree._size)
+    print("PRINT ALBERO: ")
+    print(node4._tree)
+
     #node4 = children_list.before(children_list.before(children_list.last()))._node._child
 
     # children_list = btree.root().children()

@@ -125,7 +125,7 @@ class _DoublyLinkedBase:
           print(self._medianKey)
           print(nodeParent.key())
           print(self.__len__())
-          if(self._medianKey<nodeParent.key() and self.__len__()%2!=0): #se elimino a destra e ottengo una lista dispari
+          if(self._medianKey<nodeParent.key() and self.__len__()%2==0): #se elimino a destra e ottengo una lista dispari
             print("AGGIORNAMENTO LUNGHEZZA DISPARI, AGGIUNTA A SX")
             oldMedian=self._median
             #if(oldMedian._parent._element>newest._element):
@@ -134,7 +134,7 @@ class _DoublyLinkedBase:
             #self._median._parent=oldMedian._prev._parent
 
 
-          if(self._size%2==0 and self._medianKey>nodeParent.key()): #se elimino a sx e ottengo una lista pari
+          if(self._size%2!=0 and self._medianKey>nodeParent.key()): #se elimino a sx e ottengo una lista pari
             print("AGGIORNAMENTO LUNGHEZZA PARI, AGGIUNTA A DESTRA!")
             oldMedian=self._median
             self._median=oldMedian._next

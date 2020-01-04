@@ -155,7 +155,7 @@ class PositionalList(_DoublyLinkedBase):
     l1._trailer._prev=self._median._prev
     self._header._next._prev = l1._header
     self._median._prev._next = l1._trailer
-    l1._median=l1._trailer._prev
+    l1._median=l1._trailer._prev._prev
     l1._medianKey=l1._median._parent.key()
 
     l2._size=self._size//2
@@ -163,7 +163,7 @@ class PositionalList(_DoublyLinkedBase):
     l2._trailer._prev=self._trailer._prev
     self._median._prev = l2._header
     self._trailer._prev._next = l2._trailer
-    l2._median=l2._trailer._prev
+    l2._median=l2._trailer._prev._prev
     l2._medianKey=l2._median._parent.key()
 
     return l1,l2
