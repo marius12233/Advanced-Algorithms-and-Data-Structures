@@ -31,8 +31,8 @@ if __name__=="__main__":
     btree.add(100)
     btree.add(101)
     btree.add(102)
-    btree.add(89)
-    #btree.add(92)
+    #btree.add(89)
+    btree.add(92)
 
     for child in btree.BFS():
        print(child)

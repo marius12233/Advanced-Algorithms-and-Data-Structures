@@ -483,8 +483,9 @@ class RedBlackTreeMap(TreeMap):
       print("DIVERSO")
       print(listmedian._parent.key())
       print(listmedian._prev._parent.key())
-      # if listmedian._prev._parent == self.left(listmedian._parent):
-      #     return listmedian._parent
+      if listmedian._prev._parent == self.left(listmedian._parent):
+          return listmedian._parent
+
       return self.before(listmedian._parent)
     else:
         print("MEDIANO: ", listmedian._parent.key())
