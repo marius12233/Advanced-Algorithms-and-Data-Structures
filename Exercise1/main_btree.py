@@ -33,6 +33,7 @@ if __name__=="__main__":
     btree.add(102)
     #btree.add(89)
     btree.add(92)
+    #btree.add(97)
 
     for child in btree.BFS():
        print(child)
