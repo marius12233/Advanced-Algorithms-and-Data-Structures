@@ -152,16 +152,14 @@ class TreeMap(LinkedBinaryTree, MapBase):
         pass
       return p
 
-  def add(self, k):
+  def add(self, k, v=None):
     """Assign value v to key k, overwriting existing value if present."""
-    print("la chiave è:")
     print(k)
     if self.is_empty():
       #Popola la doubly linked list con i primi due valori
-      print("sono nel primo if")
       f1 = self._l.add_last(None)
       f2 = self._l.add_last(None)
-      leaf = self._add_root(self._Item(k,k), left_out=f1, right_out=f2)     # from LinkedBinaryTree
+      leaf = self._add_root(self._Item(k,v), left_out=f1, right_out=f2)     # from LinkedBinaryTree
       f1._node._parent = leaf
       f2._node._parent = leaf
       self._l._computeMedianAdd(leaf,f2._node)
@@ -176,25 +174,17 @@ class TreeMap(LinkedBinaryTree, MapBase):
         # print("Existing item: right-out: ",p._node._right_out)
         # return p
       else:
-        item = self._Item(k,k)
+        item = self._Item(k,v)
         if p.key() < k:
           #Il nuovo elemento nella lista deve stare a destra di quello puntato da p
           f_p = p._node._right_out
-          print("Add to p : ", p.key())
-          print(f_p)
-
           new_fp = self._l.add_after(p, f_p, None) #passo anche p alla lista
           leaf = self._add_right(p, item, right_out=new_fp)        # inherited from LinkedBinaryTree
           new_fp._node._parent = leaf
           f_p._node._parent = leaf
           self._l._computeMedianAdd(leaf,new_fp._node)
         else:
-          print("sono nell'ultimo else")
-          print("Chiave da aggiungere: ", k)
-          print("Node: ", p.key())
-          print("Is leaf?: ", self.is_leaf(p))
           f_p = p._node._left_out
-          print("fp: ", f_p)
           new_fp = self._l.add_before(p, f_p, None)
           leaf = self._add_left(p, item, left_out=new_fp)         # inherited from LinkedBinaryTree
           new_fp._node._parent = leaf

@@ -35,7 +35,7 @@ class BTree(Tree):
                 yield pos
 
 
-    def __init__(self, degree=4):
+    def __init__(self, degree=7):
         self._root = None
         self._size = 0
         self._num_node = 0
@@ -292,6 +292,31 @@ class BTree(Tree):
         for elem in tree_node.elements():
             yield elem
 
+    def __len__(self):
+        return self._size
+
+    def BFS(self):
+        i=0
+        if self._num_node ==1:
+            root = self._root
+            for elems in root.positions():
+                yield(elems.key())
+        elif not self.is_empty() and self._num_node>1:
+            fringe = ArrayQueue()  # known positions not yet yielded
+            fringe.enqueue(self.root())  # starting with the root
+            while not fringe.is_empty():
+                tree_node = fringe.dequeue()  # remove from front of the queue
+                if tree_node is not None:
+                    print("NODO ",i)
+                    for node in self.bfs(tree_node):  # report this position
+                        #print(node)
+                        yield node
+                    #yield tree_node._tree
+                    i+=1
+
+                    for c in tree_node.children():
+                        fringe.enqueue(c._node._child)  # add children to back of queue
+
 
 
 
@@ -313,21 +338,22 @@ if __name__=='__main__':
     # print("============ add 25....")
     btree.add(25)
     btree.add(60)
-    btree.add(55)
-
-    print("========== add 70")
-    btree.add(70)
-    # # # #btree.add(18)
-    print("========== add 55")
-    # # # btree.add(19)
-    print("========== add 80")
-    btree.add(80)
-    btree.add(85)
-    btree.add(90)
-    btree.add(95)
-    btree.add(100)
-    btree.add(101)
-    btree.add(102)
+    print("TREE SIZE: ", btree._size)
+    # btree.add(55)
+    #
+    # print("========== add 70")
+    # btree.add(70)
+    # # # # #btree.add(18)
+    # print("========== add 55")
+    # # # # btree.add(19)
+    # print("========== add 80")
+    # btree.add(80)
+    # btree.add(85)
+    # btree.add(90)
+    # btree.add(95)
+    # btree.add(100)
+    # btree.add(101)
+    # btree.add(102)
     #print("====== CANCELLO 102========")
     #btree.delete(102)
     #btree.delete(90)
@@ -335,10 +361,12 @@ if __name__=='__main__':
     #btree.delete(100)
     #btree.delete(90)
     #btree.delete(80)
-    btree.add(120)
-    btree.add(130)
-    for i in range(140, 251, 10):
-        btree.add(i)
+    #btree.add(91)
+    #btree.add(92)
+    #btree.add(89)
+    #btree.add(150)
+    # for i in range(140, 251, 10):
+    #     btree.add(i)
     #btree.add(140)
     #btree.add(150)
     print(" ADDING 100 ...")
@@ -490,6 +518,10 @@ if __name__=='__main__':
 
     print("PRINT ALBERO: ")
     print(node4._tree)
+
+    print("BREADTHFIRST")
+    for child in btree.BFS():
+        print(child)
 
     #node4 = children_list.before(children_list.before(children_list.last()))._node._child
 

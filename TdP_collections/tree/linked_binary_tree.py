@@ -21,6 +21,7 @@
 
 from .binary_tree import BinaryTree
 from TdP_collections.list.positional_list import PositionalList
+from ..queue.array_queue import ArrayQueue
 
 
 class LinkedBinaryTree(BinaryTree):
@@ -37,7 +38,7 @@ class LinkedBinaryTree(BinaryTree):
       self._parent = parent
       self._left = left
       self._right = right
-      self._left_out = left_out
+      self._left_out = left_out   # we use left out and right out attribute to indicate left and right children of the external node
       self._right_out = right_out
       #self._child = None
 
@@ -222,9 +223,6 @@ class LinkedBinaryTree(BinaryTree):
         node._right_out = None
 
 
-      print("Node to delete: ",node._element._key)
-      print("Parent of node to delete: ", parent)
-
       if node is parent._left:
         if child is None:                       # Il nodo da eliminare è una foglia ed è figlio sx
           if left:
@@ -268,14 +266,6 @@ class LinkedBinaryTree(BinaryTree):
 
     return node._element
 
-  def __repr__(self):
-    blank_line = self._size//2
-    string = " "*blank_line + str(self.root()) + " "*blank_line
-
-    return str(self.root())
-
-
-
 
   def _attach(self, p, t1, t2):
     """Attach trees t1 and t2, respectively, as the left and right subtrees of the external Position p.
@@ -300,3 +290,71 @@ class LinkedBinaryTree(BinaryTree):
       node._right = t2._root
       t2._root = None             # set t2 instance to empty
       t2._size = 0
+
+
+
+
+  def __repr__(self):
+    blank_line = int(self._size)
+    string = ""
+    level = {}
+    num_level = 0
+    num_children = 0
+
+
+    if not self.is_empty():
+      fringe = ArrayQueue()             # known positions not yet yielded
+      fringe.enqueue(self.root())        # starting with the root
+      i=0
+      while not fringe.is_empty():
+        p = fringe.dequeue()             # remove from front of the queue
+        if p == self.root():
+
+          #level[0]= ["\t" * blank_line + str(p) + "\t" * blank_line +"\n"]
+          num_level=0
+          num_level = 1
+          level[0]=[p]
+          level[num_level]=[]
+          i=2
+          num_children=0
+        else:
+          #string+=level[i]
+          i-=1
+          level[num_level].append(p)
+
+          if i == 0:
+            i=num_children
+            num_level+=1
+            string +="\n"
+            level[num_level]=[]
+            num_children = 0
+            #string += "\t" * blank_line + str(p) + "\t" * blank_line
+
+        for c in self.children(p):
+          fringe.enqueue(c)              # add children to back of queue
+
+    string = "\t" * blank_line + str(self.root()) + "\t" * blank_line +"\n"
+    blank_line = max(int((blank_line+1) // 2), 1)
+
+    for i in range(1,len(level.keys())):
+      parent_index = 0
+      ind=0
+      j = 0
+      max_j = len(level[i])
+      while j < max_j:
+        if self.parent(level[i][j]) == level[i-1][parent_index]:
+          string += "\t" * blank_line + str(level[i][j]) + "\t" * (blank_line)
+          ind+=1
+          j+=1
+        else:
+          string += "\t" * blank_line +"\t" + "\t" * (blank_line)
+          ind+=1
+        if ind == 2:
+          parent_index+=1
+      string+="\n"
+      blank_line = max(int((blank_line+1) // 2), 1)
+
+
+
+    return string
+
