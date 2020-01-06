@@ -113,8 +113,6 @@ class PositionalList(_DoublyLinkedBase):
   def add_before(self, parent, p, e):
     """Insert element e into list before Position p and return new Position."""
     original = self._validate(p)
-    print('Chiamata per: ')
-    print(parent.key())
     return self._insert_between(e, original._prev, original, parent)
 
   def add_after(self, parent, p, e):

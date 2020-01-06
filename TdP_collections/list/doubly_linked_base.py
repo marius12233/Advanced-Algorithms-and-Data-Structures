@@ -62,28 +62,22 @@ class _DoublyLinkedBase:
   def _computeMedianAdd(self,nodeParent,newest):
     """It computes the median updating, in case of add operation in the list"""
     if(nodeParent!=None):
-      print("nodeparent.key iniziale")
-      print(nodeParent.key())
+
+      pass
 
 
     if (self._size==1): #no operations
       pass
     else:
       if(self._size==2): #first median update, done for the list median (taken for excess)
-          print("lunghezza = 2")
           self._median=newest #primo settaggio del mediano
           self._medianKey=nodeParent.key()
           #self._median._parent=nodeParent
-          print("il mediano è:")
-          print(nodeParent.key())
 
       else:
-          print(self._median._parent.key())
-          print(nodeParent.key())
-          print("len: ", self._size)
+
           if(self._medianKey>nodeParent.key() and self._size%2!=0):
             #first update case: key added on the left and odd number of elements for the list
-            print("AGGIORNAMENTO LUNGHEZZA DISPARI, AGGIUNTA A SX")
             oldMedian=self._median
             #if(oldMedian._parent._element>newest._element):
             self._median=oldMedian._prev #median moved on the left
@@ -93,7 +87,6 @@ class _DoublyLinkedBase:
 
           if(self._size%2==0 and self._medianKey<nodeParent.key()):
             #second update case: key added on the right and even number of elements for the list
-            print("AGGIORNAMENTO LUNGHEZZA PARI, AGGIUNTA A DESTRA!")
             oldMedian=self._median
             self._median=oldMedian._next #median moved on the right
             self._medianKey=oldMedian._next._parent.key()
@@ -108,28 +101,21 @@ class _DoublyLinkedBase:
   def _computeMedianRemove(self,nodeParent):
     """It computes the median updating, in case of remove operation in the list"""
     if(nodeParent!=None):
-      print("nodeparent.key iniziale")
-      print(nodeParent.key())
+      pass
 
     if (self._size==1): #no operations
       pass
     else:
       if(self._size==2): #None setting for the median, in case of all the list elements remove
-          print("lunghezza = 2")
           self._median=None #eliminazione del mediano=root
           self._medianKey=None
           #self._median._parent=nodeParent
-          print("il mediano è:")
-          print(nodeParent.key())
+
 
       else:
-          #print(self._median._parent.key())
-          print(self._medianKey)
-          print(nodeParent.key())
-          print(self.__len__())
+
           if(self._medianKey<nodeParent.key() and self.__len__()%2==0):
             #first update case: key removed from the right and even number of elements for the list
-            print("AGGIORNAMENTO LUNGHEZZA DISPARI, AGGIUNTA A SX")
             oldMedian=self._median
             #if(oldMedian._parent._element>newest._element):
             self._median=oldMedian._prev #median moved on the left
@@ -139,7 +125,6 @@ class _DoublyLinkedBase:
 
           if(self._size%2!=0 and self._medianKey>nodeParent.key()):
             #second update case: key removed on the left and odd number of elements for the list
-            print("AGGIORNAMENTO LUNGHEZZA PARI, AGGIUNTA A DESTRA!")
             oldMedian=self._median
             self._median=oldMedian._next #median moved on the right
             self._medianKey=oldMedian._next._parent.key()
@@ -185,9 +170,7 @@ class _DoublyLinkedBase:
   def fusion(self, other, right=True):
       other_copy = deepcopy(other)
       walk = other._header._next
-      print("SITUATION BEFORE LIST FUSION")
       while not walk == other._trailer:
-          print(walk._parent)
           walk=walk._next
 
       if right:
@@ -209,13 +192,8 @@ class _DoublyLinkedBase:
           other_first._prev = self._header
 
       walk = other._header._next if right else other._trailer._prev
-      print("SITUATION AFTER LIST FUSION")
-      print("SIZE OTHER: ", len(other))
-      print(" SIZE DI other PRIMA DELLA FUSION ", other._size)
-      print(" header of our list: ", self._header._next._parent)
-      print("RIGHT?: ", right)
+
       for i in range(len(other)):
-          print(i," COMPIO: ", walk._parent)
           self._size +=1
           self._computeMedianAdd(walk._parent,walk)
           walk = walk._next if right else walk._prev

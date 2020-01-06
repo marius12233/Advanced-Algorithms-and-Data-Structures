@@ -189,16 +189,13 @@ class LinkedBinaryTree(BinaryTree):
     node._element = e
     return old
 
-  def _delete(self, p, left=True):
+  def _delete(self, p):
     """Delete the node at Position p, and replace it with its child, if any.
 
     Return the element that had been stored at Position p.
     Raise ValueError if Position p is invalid or p has two children.
     """
-
-
     node = self._validate(p)
-    print("::::::::::DELETING:::::::: ", p)
     if self.num_children(p) == 2:
       raise ValueError('Position has two children')
     child = node._left if node._left else node._right  # might be None
@@ -226,10 +223,10 @@ class LinkedBinaryTree(BinaryTree):
       self._l._computeMedianRemove(p)
       if node._left_out is not None:
         self._l.delete(node._left_out)
-        #node._left_out = None
+        node._left_out = None
       else:
         self._l.delete(node._right_out)
-        #node._right_out = None
+        node._right_out = None
 
       if node == parent._left:
         if child is None:                       # Il nodo da eliminare è una foglia ed è figlio sx

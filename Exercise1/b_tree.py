@@ -4,7 +4,7 @@ from TdP_collections.queue.array_queue import ArrayQueue
 
 
 class BTree(Tree):
-"""This class implements the external structure"""
+    """This class implements the external structure"""
 
     class Node():
 
@@ -73,6 +73,7 @@ class BTree(Tree):
 
     def delete(self, k):
         """It proceeds with the deletion of the k-node in the B-Tree structure"""
+        print("DELETING ", k)
         p, tree_node = self.search(self._root, k)
         if tree_node.tree().is_leaf(p): #leaf node
             #research of the k-node in the outer subtree
@@ -96,7 +97,7 @@ class BTree(Tree):
         new_tree_node.tree().delete(new_p)
         self._size -=1
 
-
+        #if not k==40:
         self.check_underflow(new_tree_node)
 
         #return new_p, new_tree_node
@@ -121,35 +122,31 @@ class BTree(Tree):
             return new_p, new_tree_node
 
 
-    def add(self, k):
+    def add(self, k, v=None):
+        print("\nADDING: ",k,"\n")
         if self._size==0:
             node = self.Node()
             self._root = node
-            node.tree().add(k)
+            node.tree().add(k, v)
             self._size+=1
             self._num_node+=1
         else:
             (p, tree_node) = self.search(self._root, k)
             if p.key() == k:
                 raise KeyError("Already exists a key k")
-            tree_node.tree().add(k)
+            tree_node.tree().add(k, v)
             self._size+=1
             self.check_overflow(tree_node)
 
 
     def check_overflow(self, tree_node, split_root=False):
         if len(tree_node.tree()) > self._b -1:
-            print("Size: ", len(tree_node.tree()))
-            print("Overflow!")
             self.split(tree_node)
 
     def check_underflow(self, tree_node):
         """It checks underflow conditions, comparing the length of the tree to a parameter"""
-        print("SIZE AFTER DELETE: ", len(tree_node.tree()._l))
-        print("MINIMO: ", self._a)
-
         if len(tree_node.tree()._l) < self._a:
-            print("UNDERFLOW!!!")
+            print("UNDERFLOW at node with root: ",tree_node.tree().root())
             self.resolve_underflow(tree_node)
 
     def _immediate_siblings(self, tree_node):
@@ -157,7 +154,6 @@ class BTree(Tree):
         if self._root == tree_node:
             return None
         child_pos = tree_node._list_parent
-        print("Child position: ", child_pos)
         children = tree_node._parent.children()
 
         tnode_before, tnode_after = None, None
@@ -179,12 +175,15 @@ class BTree(Tree):
         tbefore, tafter = self._immediate_siblings(tree_node)
         if tbefore is not None and len(tbefore.tree()._l) > self._a:
             #transfer calling on the left adjacent subtrees
+            print("TRANSFER FROM LEFT")
             self.transfer(tree_node, tbefore)
         elif tafter is not None and len(tafter.tree()._l) > self._a:
             #transfer calling on the right adjacent subtrees
+            print("TRANSFER FROM RIGHT")
             self.transfer(tree_node, tafter, before=False)
         else:
-            if tbefore is not None:
+            p_parent = tree_node._list_parent._node._parent
+            if tbefore is not None and p_parent._node._right_out is not None and tree_node._list_parent._node == p_parent._node._right_out._node: #
                 print("FUSION LEFT")
                 #fusion calling on the left adjacent subtrees
                 self.fusion(tree_node, tbefore, left=True)
@@ -198,7 +197,8 @@ class BTree(Tree):
         w = tree_node
         s = tree_transfer_node
         u = tree_node._parent
-        p_parent = tree_node._list_parent._node._parent #Position del nodo nell'albero di cui è figlio tree node
+        w_parent = tree_node._list_parent._node._parent #Position del nodo nell'albero di cui è figlio tree node
+        s_parent = s._list_parent._node._parent
         #tree_node.add(p_parent.key())
         if before:
             #last node calling, in case of left subtree
@@ -206,8 +206,15 @@ class BTree(Tree):
         else:
              #first node calling, in case of rigth subtree
             p_transfer = tree_transfer_node.tree()._subtree_first_position(tree_transfer_node.tree().root())
-        w.tree().add(p_parent.key())
-        p_parent._node._element = p_transfer._node._element
+        # if w_parent
+        if w_parent == s_parent:
+            w.tree().add(w_parent.key())
+            w_parent._node._element = p_transfer._node._element
+        else:
+            parent = u.tree().before(w_parent) if before else u.tree().after(w_parent)
+            w.tree().add(parent.key())
+            parent._node._element = p_transfer._node._element
+
         s.tree().delete(p_transfer)
 
     def fusion(self, tree_node, tree_fusion_node, left=True):
@@ -216,35 +223,23 @@ class BTree(Tree):
         w = tree_node
         s = tree_fusion_node
         u = w._parent
-        p_parent = w._list_parent._node._parent
+        p_parent = w._list_parent._node._parent #if left else w._list_parent._node._parent
+
         tree = RedBlackTreeMap()
-        p = tree.add(p_parent.key())
+        p = tree.add(p_parent.key())    # To obtain a position of a generic RBTree
         if left:
-            s.tree().catenate(s._tree, p, left=False, T2=w._tree)
-            print("Nodi nella lists")
+            w.tree().catenate(w._tree, p, left=False, T2=s._tree)
 
-            s.tree()._l.fusion(w._tree._l, right=True)
-            root = s.tree().root()
-            left = s.tree().left(root)
-            right = s.tree().right(root)
-            s.tree()._update_black_height(left if left is not None else right)
+            w.tree()._l.fusion(s._tree._l, right=True)
+            root = w.tree().root()
+            left = w.tree().left(root)
+            right = w.tree().right(root)
+            w.tree()._update_black_height(left if left is not None else right)
 
-            self.check_overflow(s)
-
-            # w._tree.catenate(w._tree, p, left=False, T2=s._tree)
-            # #w._children = s._tree._l
-            # #w.add(p_parent.key())
-            # w.tree()._l.fusion(s._tree._l, right=True)
-            # root = w.tree().root()
-            # left = w.tree().left(root)
-            # right = w.tree().right(root)
-            # w.tree()._update_black_height(left if left is not None else right)
-            #
-            # self.check_overflow(w)
+            self.check_overflow(w)
 
         else:
             s.tree().catenate(s._tree, p, left=True, T2=w._tree)
-            print("Nodi nella lists")
 
             s.tree()._l.fusion(w._tree._l, right=False)
             root = s.tree().root()
@@ -254,10 +249,8 @@ class BTree(Tree):
 
             self.check_overflow(s)
             #s.tree().add(p_parent.key())
-        print("======== INSIDE FUSION ==========")
-        print("p lo ro: ", p._node._left, p._node._left_out, p._node._right_out, p._node._right )
 
-        u.tree().__delitem__(p.key())
+        del(u.tree()[p.key()])
 
 
 
@@ -268,9 +261,9 @@ class BTree(Tree):
 
         #split operation, called on internal BSTs, returns the obtained subtrees
         if tree_node._parent is None:
-            T1, T2 = tree_node.tree().split(p, split_root=True)
+            T1, T2 = tree_node.tree().split(p)
         else:
-            T1, T2 = tree_node.tree().split(p, split_root=False)
+            T1, T2 = tree_node.tree().split(p)
 
         #parent = tree_node._parent
 
@@ -282,7 +275,6 @@ class BTree(Tree):
 
 
         if tree_node._parent is None:   #Sono la radice
-            print("===================================== SPLIT RADIX ===============================================")
             tree_parent = RedBlackTreeMap()
             np = tree_parent.add(p.key())
             node_parent = self.Node(tree_parent)
@@ -307,7 +299,6 @@ class BTree(Tree):
 
             #parent._child = node_parent
         else:
-            print("========================== SPLIT NO RADIX ===============================")
             node_parent = tree_node._parent
             new_p = node_parent.tree().add(p.key())
 
@@ -357,6 +348,10 @@ class BTree(Tree):
         i=0
         if self._num_node ==1:
             root = self._root
+            print("\nNODE 0\n")
+            print("Size of Node: ", len(root.tree()))
+            print("# of children: ", len(root.tree()._l))
+            print("RADIX ELEMENTS:")
             for pos in root.positions():
                 yield(pos)
         elif not self.is_empty() and self._num_node>1:
@@ -365,20 +360,37 @@ class BTree(Tree):
             while not fringe.is_empty():
                 tree_node = fringe.dequeue()  # remove from front of the queue
                 if tree_node is not None:
-                    print("NODO ",i)
+                    print("\nNODO ",i,": \n")
+                    print("Size of Node: ", len(tree_node.tree()))
+                    print("# of children: ", len(tree_node.tree()._l))
+                    print("\nSTRUCTURE: \n")
+                    print(tree_node.tree())
+                    print("\nELEMENTS: \n")
                     for node in self.bfs(tree_node):  # report this position
-                        #print(node)
                         yield node
-                    #yield tree_node._tree
                     i+=1
 
                     for c in tree_node.children():
                         fringe.enqueue(c._node._child)  # add children to back of queue
 
 
+    def print_tree(self):
+        print("\n")
+        print("="*30, " BTREE ", "="*30)
+        print("\n")
+        print("# Elements: ", self._size)
+        print("# Node: ", self._num_node)
+        print("\n")
+        for child in self.BFS():
+            print(child, "   BH: ", child._node._black_height, "RED\t" if child._node._red else "BLACK",
+                   " parent: ", child._container.parent(child),
+                  "\tparent left: " if child._container.parent(
+                    child) is not None else "", child._container.parent(child)._node._left == child._node if child._container.parent(
+                    child) is not None else "", sep="\t")
 
-
-
+        print("\n")
+        print("="*30, "", "="*30)
+        print("\n")
 
 
 if __name__=='__main__':

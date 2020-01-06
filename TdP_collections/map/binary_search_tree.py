@@ -154,7 +154,6 @@ class TreeMap(LinkedBinaryTree, MapBase):
 
   def add(self, k, v=None):
     """Assign value v to key k, overwriting existing value if present."""
-    print(k)
     if self.is_empty():
       #Popola la doubly linked list con i primi due valori
       f1 = self._l.add_last(None)
@@ -218,8 +217,6 @@ class TreeMap(LinkedBinaryTree, MapBase):
     if not self.is_empty():
       p = self._subtree_search(self.root(), k)
       if k == p.key():
-        print("Is deleting a leaf?: ", self.is_leaf(p))
-        print("p lo ro: ", p._node._left, p._node._left_out, p._node._right_out, p._node._right)
         self.delete(p)                           # rely on positional version
         return                                   # successful deletion complete
       self._rebalance_access(p)                  # hook for balanced tree subclasses
