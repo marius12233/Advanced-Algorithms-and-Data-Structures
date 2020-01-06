@@ -44,8 +44,8 @@ class _DoublyLinkedBase:
     self._header._next = self._trailer                  # trailer is after header
     self._trailer._prev = self._header                  # header is before trailer
     self._size = 0                                      # number of elements
-    self._median=None
-    self._medianKey=None
+    self._median=None                                   # median element
+    self._medianKey=None                                # key of the median parent
 
   #-------------------------- public accessors --------------------------
 
@@ -60,16 +60,16 @@ class _DoublyLinkedBase:
   #-------------------------- nonpublic utilities --------------------------
 
   def _computeMedianAdd(self,nodeParent,newest):
+    """It computes the median updating, in case of add operation in the list"""
     if(nodeParent!=None):
       print("nodeparent.key iniziale")
       print(nodeParent.key())
 
 
-    if (self._size==1): #il primo aggiornamento del mediano deve essere fatto per eccesso, al secondo elemento della lista
-      #quindi per il caso lunghezza=2
+    if (self._size==1): #no operations
       pass
     else:
-      if(self._size==2):
+      if(self._size==2): #first median update, done for the list median (taken for excess)
           print("lunghezza = 2")
           self._median=newest #primo settaggio del mediano
           self._medianKey=nodeParent.key()
@@ -78,41 +78,43 @@ class _DoublyLinkedBase:
           print(nodeParent.key())
 
       else:
-          print(self._median._parent.key()) #48
-          print(nodeParent.key())           #44
-          print("len: ", self._size)             #4
-          if(self._medianKey>nodeParent.key() and self._size%2!=0): #se aggiungo a sinistra e ho una lista dispari
+          print(self._median._parent.key())
+          print(nodeParent.key())
+          print("len: ", self._size)
+          if(self._medianKey>nodeParent.key() and self._size%2!=0):
+            #first update case: key added on the left and odd number of elements for the list
             print("AGGIORNAMENTO LUNGHEZZA DISPARI, AGGIUNTA A SX")
             oldMedian=self._median
             #if(oldMedian._parent._element>newest._element):
-            self._median=oldMedian._prev
+            self._median=oldMedian._prev #median moved on the left
             self._medianKey=oldMedian._prev._parent.key()
             #self._median._parent=oldMedian._prev._parent
 
 
-          if(self._size%2==0 and self._medianKey<nodeParent.key()): #la lunghezza è pari e ho aggiunto a destra
+          if(self._size%2==0 and self._medianKey<nodeParent.key()):
+            #second update case: key added on the right and even number of elements for the list
             print("AGGIORNAMENTO LUNGHEZZA PARI, AGGIUNTA A DESTRA!")
             oldMedian=self._median
-            self._median=oldMedian._next
+            self._median=oldMedian._next #median moved on the right
             self._medianKey=oldMedian._next._parent.key()
             #self._median._parent=oldMedian._next._parent
 
           else:
+            #median key setting
             self._medianKey=self._median._parent.key()
 
 
 
   def _computeMedianRemove(self,nodeParent):
-
+    """It computes the median updating, in case of remove operation in the list"""
     if(nodeParent!=None):
       print("nodeparent.key iniziale")
       print(nodeParent.key())
 
-    if (self._size==1): #il primo aggiornamento del mediano deve essere fatto per eccesso, al secondo elemento della lista
-      #quindi per il caso lunghezza=2
+    if (self._size==1): #no operations
       pass
     else:
-      if(self._size==2):
+      if(self._size==2): #None setting for the median, in case of all the list elements remove
           print("lunghezza = 2")
           self._median=None #eliminazione del mediano=root
           self._medianKey=None
@@ -125,29 +127,34 @@ class _DoublyLinkedBase:
           print(self._medianKey)
           print(nodeParent.key())
           print(self.__len__())
-          if(self._medianKey<nodeParent.key() and self.__len__()%2==0): #se elimino a destra e ottengo una lista dispari
+          if(self._medianKey<nodeParent.key() and self.__len__()%2==0):
+            #first update case: key removed from the right and even number of elements for the list
             print("AGGIORNAMENTO LUNGHEZZA DISPARI, AGGIUNTA A SX")
             oldMedian=self._median
             #if(oldMedian._parent._element>newest._element):
-            self._median=oldMedian._prev
+            self._median=oldMedian._prev #median moved on the left
             self._medianKey=oldMedian._prev._parent.key()
             #self._median._parent=oldMedian._prev._parent
 
 
-          if(self._size%2!=0 and self._medianKey>nodeParent.key()): #se elimino a sx e ottengo una lista pari
+          if(self._size%2!=0 and self._medianKey>nodeParent.key()):
+            #second update case: key removed on the left and odd number of elements for the list
             print("AGGIORNAMENTO LUNGHEZZA PARI, AGGIUNTA A DESTRA!")
             oldMedian=self._median
-            self._median=oldMedian._next
+            self._median=oldMedian._next #median moved on the right
             self._medianKey=oldMedian._next._parent.key()
             #self._median._parent=oldMedian._next._parent
 
-          if(self._size%2==0 and self._median._parent.key()==nodeParent.key()): #se elimino il mediano e ottengo una lista pari
+        #The following cases regarde median deletions:
+          if(self._size%2==0 and self._median._parent.key()==nodeParent.key()):
+            #even number of elements for the list
             oldMedian=self._median
-            self._median=oldMedian._next
+            self._median=oldMedian._next #median moved on the right
             self._medianKey=oldMedian._next._parent.key()
-          if(self.__len__()%2!=0 and self._median._parent.key()==nodeParent.key()): #se elimino il mediano e ottengo una lista dispari
+          if(self.__len__()%2!=0 and self._median._parent.key()==nodeParent.key()):
+            #odd number of elements for the list
             oldMedian=self._median
-            self._median=oldMedian._prev
+            self._median=oldMedian._prev  #median moved on the left
             self._medianKey=oldMedian._prev._parent.key()
 
   def _getMedian(self):
