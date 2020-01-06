@@ -74,9 +74,11 @@ class BTree(Tree):
     def delete(self, k):
         """It proceeds with the deletion of the k-node in the B-Tree structure"""
         print("DELETING ", k)
-        p, tree_node = self.search(self._root, k)
+        p, tree_node = self.search(self._root, k)   # search in the entire BTree the key k
+        if not p.key() == k:
+            raise KeyError("Does not exists a key k ", k)
         if tree_node.tree().is_leaf(p): #leaf node
-            #research of the k-node in the outer subtree
+            #research of the predecessor of k-node in the outer subtree
             new_p, new_tree_node = self._predecessor_external_subtree(p, tree_node, k)
         else:
             if p._node._left_out is not None and p._node._left_out._node._child is not None:
@@ -92,6 +94,7 @@ class BTree(Tree):
 
                 # new_p adesso è una foglia del suo rbtree
                 new_p, new_tree_node = self._predecessor_external_subtree(new_p, tree_node, k)
+
 
         p._node._element = new_p._node._element
         new_tree_node.tree().delete(new_p)
@@ -343,6 +346,14 @@ class BTree(Tree):
 
     def __len__(self):
         return self._size
+
+    def search_key(self, k):
+        pos = self.search(self.root(), k)[0]
+        if pos.key()==k:
+            return pos.key(),pos.value()
+        else:
+            raise KeyError("Does not exists a key "+str(k))
+
 
     def BFS(self):
         i=0

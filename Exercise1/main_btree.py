@@ -97,8 +97,10 @@ if __name__=="__main__":
     #    print(child, "   BH: ", child._node._black_height, " is red: ", child._node._red, " size: ", child._container._size,
     #          " list_size: ", child._container._l._size, " parent: ", child._container.parent(child),
     #          "parent left: ", child._container.parent(child)._node._left == child._node if  child._container.parent(child) is not None else None)
-
-    #print((btree.search(btree.root(), 10)[0]).key())
+    print("Searching for element 5")
+    print(btree.search_key(5))
+    #btree.delete(10)
+    #btree.add(5)
 
 
 
