@@ -5,7 +5,7 @@ if __name__=="__main__":
 
     btree.add(10)
     btree.add(15)
-    btree.add(5)
+    btree.add(5, ('Mario', 20, 'Bellizzi'))
     btree.add(20)
     btree.add(30)
     btree.add(40)
@@ -84,23 +84,9 @@ if __name__=="__main__":
     btree.delete(118)
     print("\nBREADTHFIRST AFTER FUSION: ")
     btree.print_tree()
-    #
-    # btree.delete(40)
-    # btree.delete(5)
-    # btree.delete(104)
-    #
-    #
-    #
-    #
-    # btree.print_tree()
-    # for child in btree.BFS():
-    #    print(child, "   BH: ", child._node._black_height, " is red: ", child._node._red, " size: ", child._container._size,
-    #          " list_size: ", child._container._l._size, " parent: ", child._container.parent(child),
-    #          "parent left: ", child._container.parent(child)._node._left == child._node if  child._container.parent(child) is not None else None)
     print("Searching for element 5")
     print(btree.search_key(5))
-    #btree.delete(10)
-    #btree.add(5)
+
 
 
 
