@@ -198,6 +198,7 @@ class LinkedBinaryTree(BinaryTree):
 
 
     node = self._validate(p)
+    print("::::::::::DELETING:::::::: ", p)
     if self.num_children(p) == 2:
       raise ValueError('Position has two children')
     child = node._left if node._left else node._right  # might be None
@@ -213,19 +214,26 @@ class LinkedBinaryTree(BinaryTree):
     else:
       parent = node._parent
 
-      if left:
-        self._l._computeMedianRemove(p)
+      # if left:
+      #   self._l._computeMedianRemove(p)
+      #   self._l.delete(node._left_out)
+      #   node._left_out = None
+      # else:
+      #   self._l._computeMedianRemove(p)
+      #   self._l.delete(node._right_out)
+      #   node._right_out = None
+
+      self._l._computeMedianRemove(p)
+      if node._left_out is not None:
         self._l.delete(node._left_out)
-        node._left_out = None
+        #node._left_out = None
       else:
-        self._l._computeMedianRemove(p)
         self._l.delete(node._right_out)
-        node._right_out = None
+        #node._right_out = None
 
-
-      if node is parent._left:
+      if node == parent._left:
         if child is None:                       # Il nodo da eliminare è una foglia ed è figlio sx
-          if left:
+          if node._right_out is not None:
             right_child_out = node._right_out
             parent._left_out=right_child_out
             right_child_out._node._parent=self._make_position(parent)
@@ -234,16 +242,16 @@ class LinkedBinaryTree(BinaryTree):
             parent._left_out=left_child_out
             left_child_out._node._parent=self._make_position(parent)
 
-        else:
-          child_out = node._left_out if node._left_out else node._right_out
-          self._l._computeMedianRemove(p)
-          self._l.delete(child_out)
-          child_out = None
+        #else:
+          # child_out = node._left_out if node._left_out else node._right_out
+          # self._l._computeMedianRemove(p)
+          # self._l.delete(child_out)
+          # child_out = None
 
         parent._left = child
       else:
         if child is None:
-          if left:
+          if node._right_out is not None:
             right_child_out = node._right_out
             parent._right_out = right_child_out
             right_child_out._node._parent = self._make_position(parent)
@@ -252,11 +260,14 @@ class LinkedBinaryTree(BinaryTree):
             parent._right_out = left_child_out
             left_child_out._node._parent = self._make_position(parent)
 
-        else:
-          child_out = node._left_out if node._left_out else node._right_out
-          self._l._computeMedianRemove(p)
-          self._l.delete(child_out)
-          child_out = None
+        #else:
+          # print("NODE: ", node._element._key, node._left_out, node._right_out)
+          # child_out = node._left_out if node._left_out is not None else node._right_out
+          # print("CHILD OUT: ", child_out)
+          # print("CHILD OUT NEXT: ", child_out._node._prev)
+          # self._l._computeMedianRemove(p)
+          # self._l.delete(child_out)
+          # child_out = None
 
         parent._right = child
 

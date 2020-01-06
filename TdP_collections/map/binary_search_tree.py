@@ -135,7 +135,7 @@ class TreeMap(LinkedBinaryTree, MapBase):
       p =  replacement
     # now p has at most one child
     parent = self.parent(p)
-    self._delete(p, left)                              # inherited from LinkedBinaryTree
+    self._delete(p)                              # inherited from LinkedBinaryTree
     self._rebalance_delete(parent)               # if root deleted, parent is None
 
 
@@ -218,6 +218,8 @@ class TreeMap(LinkedBinaryTree, MapBase):
     if not self.is_empty():
       p = self._subtree_search(self.root(), k)
       if k == p.key():
+        print("Is deleting a leaf?: ", self.is_leaf(p))
+        print("p lo ro: ", p._node._left, p._node._left_out, p._node._right_out, p._node._right)
         self.delete(p)                           # rely on positional version
         return                                   # successful deletion complete
       self._rebalance_access(p)                  # hook for balanced tree subclasses

@@ -54,7 +54,7 @@ class PositionalList(_DoublyLinkedBase):
   def _validate(self, p):
     """Return position's node, or raise appropriate error if invalid."""
     if not isinstance(p, self.Position):
-      raise TypeError('p must be proper Position type')
+      raise TypeError('p must be proper Position type else is', type(p))
     if p._container is not self:
       #raise ValueError('p does not belong to this container')
       pass

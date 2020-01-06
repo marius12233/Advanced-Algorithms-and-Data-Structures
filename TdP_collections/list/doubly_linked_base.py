@@ -18,7 +18,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+from copy import  deepcopy
 class _DoublyLinkedBase:
   """A base class providing a doubly linked list representation."""
 
@@ -174,4 +174,48 @@ class _DoublyLinkedBase:
     element = node._element                             # record deleted element
     node._prev = node._next = node._element = None      # deprecate node
     return element                                      # return deleted element
+
+  def fusion(self, other, right=True):
+      other_copy = deepcopy(other)
+      walk = other._header._next
+      print("SITUATION BEFORE LIST FUSION")
+      while not walk == other._trailer:
+          print(walk._parent)
+          walk=walk._next
+
+      if right:
+          our_last = self._trailer._prev
+          other_first = other._header._next
+          other_last = other._trailer._prev
+          our_last._next = other_first
+          other_first._prev = our_last
+          self._trailer._prev = other_last
+          other_last._next = self._trailer
+
+      else:
+          our_first = self._header._next
+          other_last = other._trailer._prev
+          other_first = other._header._next
+          our_first._prev = other_last
+          other_last._next = our_first
+          self._header._next = other_first
+          other_first._prev = self._header
+
+      walk = other._header._next if right else other._trailer._prev
+      print("SITUATION AFTER LIST FUSION")
+      print("SIZE OTHER: ", len(other))
+      print(" SIZE DI other PRIMA DELLA FUSION ", other._size)
+      print(" header of our list: ", self._header._next._parent)
+      print("RIGHT?: ", right)
+      for i in range(len(other)):
+          print(i," COMPIO: ", walk._parent)
+          self._size +=1
+          self._computeMedianAdd(walk._parent,walk)
+          walk = walk._next if right else walk._prev
+
+
+
+
+
+
 

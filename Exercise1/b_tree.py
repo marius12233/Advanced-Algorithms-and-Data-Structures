@@ -65,6 +65,7 @@ class BTree(Tree):
             return self.search( right_child, k)
 
     def delete(self, k):
+        print("DELETING: ", k)
         p, tree_node = self.search(self._root, k)
         if tree_node.tree().is_leaf(p):                             # p è già una foglia
 
@@ -84,8 +85,10 @@ class BTree(Tree):
         p._node._element = new_p._node._element
         new_tree_node.tree().delete(new_p)
         self._size -=1
+        #self.check_underflow(tree_node)
 
-        self.check_underflow(tree_node)
+
+        self.check_underflow(new_tree_node)
 
         #return new_p, new_tree_node
 
@@ -134,6 +137,8 @@ class BTree(Tree):
     def check_underflow(self, tree_node):
         print("SIZE AFTER DELETE: ", len(tree_node.tree()._l))
         print("MINIMO: ", self._a)
+        print("LEN: ", len(tree_node.tree()._l))
+        print("Root: ", tree_node.tree().root())
 
         if len(tree_node.tree()._l) < self._a:
             print("UNDERFLOW!!!")
@@ -195,15 +200,44 @@ class BTree(Tree):
         tree = RedBlackTreeMap()
         p = tree.add(p_parent.key())
         if left:
+            s.tree().catenate(s._tree, p, left=False, T2=w._tree)
+            print("Nodi nella lists")
 
-            w._tree.catenate(w._tree, p, left=False, T2=s._tree)
-            #w._children = s._tree._l
-            #w.add(p_parent.key())
+            s.tree()._l.fusion(w._tree._l, right=True)
+            root = s.tree().root()
+            left = s.tree().left(root)
+            right = s.tree().right(root)
+            s.tree()._update_black_height(left if left is not None else right)
+
+            self.check_overflow(s)
+
+            # w._tree.catenate(w._tree, p, left=False, T2=s._tree)
+            # #w._children = s._tree._l
+            # #w.add(p_parent.key())
+            # w.tree()._l.fusion(s._tree._l, right=True)
+            # root = w.tree().root()
+            # left = w.tree().left(root)
+            # right = w.tree().right(root)
+            # w.tree()._update_black_height(left if left is not None else right)
+            #
+            # self.check_overflow(w)
 
         else:
-            s.add(p_parent.key())
+            s.tree().catenate(s._tree, p, left=True, T2=w._tree)
+            print("Nodi nella lists")
 
-        u.tree().delete(p_parent)
+            s.tree()._l.fusion(w._tree._l, right=False)
+            root = s.tree().root()
+            left = s.tree().left(root)
+            right = s.tree().right(root)
+            s.tree()._update_black_height(left if left is not None else right)
+
+            self.check_overflow(s)
+            #s.tree().add(p_parent.key())
+        print("======== INSIDE FUSION ==========")
+        print("p lo ro: ", p._node._left, p._node._left_out, p._node._right_out, p._node._right )
+
+        u.tree().__delitem__(p.key())
 
 
 
@@ -289,7 +323,7 @@ class BTree(Tree):
             yield nod
 
     def bfs(self, tree_node):
-        for elem in tree_node.elements():
+        for elem in tree_node.positions():
             yield elem
 
     def __len__(self):
@@ -299,8 +333,8 @@ class BTree(Tree):
         i=0
         if self._num_node ==1:
             root = self._root
-            for elems in root.positions():
-                yield(elems.key())
+            for pos in root.positions():
+                yield(pos)
         elif not self.is_empty() and self._num_node>1:
             fringe = ArrayQueue()  # known positions not yet yielded
             fringe.enqueue(self.root())  # starting with the root

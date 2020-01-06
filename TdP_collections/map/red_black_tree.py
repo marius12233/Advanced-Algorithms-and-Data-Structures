@@ -69,7 +69,7 @@ class RedBlackTreeMap(TreeMap):
 
   def _update_black_height(self, p):
     """
-    :param p: The node to start to update black height
+    :param p: The node for starting to update black height
 ì    """
     parent = self.parent(p)
     while parent is not None:
@@ -136,22 +136,28 @@ class RedBlackTreeMap(TreeMap):
     if not self._is_red(y): # y is black; will apply Case 1 or 2
       x = self._get_red_child(y)
       if x is not None: # Case 1: y is black and has red child x; do "transfer"
+        print("CASE 1")
+        print(x, "BH: ", x._node._black_height)
+        print(y, "BH: ", y._node._black_height)
+        print(z, "BH: ", z._node._black_height)
         old_color = self._is_red(z)
         middle = self._restructure(x)
         self._set_color(middle, old_color)   # middle gets old color of z
         self._set_black(self.left(middle))   # children become black
         self._set_black(self.right(middle))
         #black height of y does not change, but change that of x and z
-        z._node._black_height=x._node._black_height
+        z._node._black_height=y._node._black_height
         self._update_black_height(self.left(middle))
 
       else: # Case 2: y is black, but no red children; recolor as "fusion"
+        print("CASE 2")
         self._set_red(y)
         if self._is_red(z):
           self._set_black(z)                 # this resolves the problem
         elif not self.is_root(z):
           self._fix_deficit(self.parent(z), self.sibling(z)) # recur upward
     else: # Case 3: y is red; rotate misaligned 3-node and repeat
+      print("CASE 3")
       self._rotate(y)
       self._set_black(y)
       self._set_red(z)
@@ -228,6 +234,7 @@ class RedBlackTreeMap(TreeMap):
                 self._attach_left(p, parent, pivot, root, T)
             else:
                 self._attach_right(p, parent, pivot, root, T)
+        self._size= self._size + T2._size +1
 
 
 
@@ -441,8 +448,8 @@ class RedBlackTreeMap(TreeMap):
               parent._parent = root2
               parent._left = None
           root2._parent = None
-          root2._black_height, parent._black_height = parent._black_height, root1._black_height
-          root2._red, parent._red = parent._red, root1._red
+          root2._black_height, parent._black_height = parent._black_height, root2._black_height
+          root2._red, parent._red = parent._red, root2._red
 
 
       root2._left = None

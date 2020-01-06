@@ -33,8 +33,25 @@ if __name__=="__main__":
     btree.add(102)
     #btree.add(89)
     btree.add(92)
-    #btree.add(97)
+    #btree.add(93)
+    #btree.delete(25)
+    #btree.delete(101)
+    for i in range(110,120):
+        btree.add(i)
+    #btree.delete(112)
+    btree.delete(20)
+    btree.delete(80)
+    btree.delete(10)
+    btree.delete(95)
+    btree.delete(112)
+
+
 
     for child in btree.BFS():
-       print(child)
+       print(child, "   BH: ", child._node._black_height, " is red: ", child._node._red, " size: ", child._container._size,
+             " list_size: ", child._container._l._size)
+
+    print((btree.search(btree.root(), 10)[0]).key())
+
+
 
