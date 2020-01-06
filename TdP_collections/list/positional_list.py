@@ -138,29 +138,35 @@ class PositionalList(_DoublyLinkedBase):
     return old_value                    # return the old element value
 
   def _computeMedianAdd(self,leaf,node):
+    """Compute median method calling"""
     super()._computeMedianAdd(leaf,node)
 
   def _computeMedianRemove(self,leaf):
+    """Compute median method calling"""
     super()._computeMedianRemove(leaf)
 
-#splitto la lista in modo da ottenere due liste, di cui la prima ha head=head della lista e la seconda ha head=mediano per eccesso
-#sappiamo che l'overflow lo otteniamo per una lista pari perchè b è dispari ed è uguale a 7
+
   def splitMedian(self):
+    """This method splits a list and returns the 2 new obtained lists"""
 
     l1=PositionalList()
     l2=PositionalList()
 
     l1._size=self._size//2
+    #header and trailer settings for the new list l1
     l1._header._next=self._header._next
     l1._trailer._prev=self._median._prev
     self._header._next._prev = l1._header
+    #median initialization for list l1, depending on b parameter choice (b=7 and l1 size=4)
     self._median._prev._next = l1._trailer
     l1._median=l1._trailer._prev._prev
     l1._medianKey=l1._median._parent.key()
 
     l2._size=self._size//2
+    #header and trailer settings for the new list l1
     l2._header._next=self._median
     l2._trailer._prev=self._trailer._prev
+    #median initialization for list l2, depending on b parameter choice (b=7 and l1 size=4)
     self._median._prev = l2._header
     self._trailer._prev._next = l2._trailer
     l2._median=l2._trailer._prev._prev
